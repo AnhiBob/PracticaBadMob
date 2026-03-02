@@ -11,19 +11,7 @@ import com.example.shoeshop.R
 
 // Set of Material typography styles to start with
 
-val ralewayRegular = FontFamily(
-    Font(R.font.raleway, FontWeight.Normal)
-)
-val ralewayBold = FontFamily(
-    Font(R.font.raleway_bold, FontWeight.Normal)
-)
-val ralewaySemiBold = FontFamily(
-    Font(R.font.raleway_semibold, FontWeight.Normal)
-)
 
-val ralewayMedium = FontFamily(
-    Font(R.font.raleway_medium, FontWeight.Normal)
-)
 
 val Typography = Typography(
     // Heading Regular 34
