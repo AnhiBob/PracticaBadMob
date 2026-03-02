@@ -17,7 +17,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import com.example.shoeshop.R
-
+//класс для кнопки "Вернуться назад", создан 02.03.2026, Серафимова Екатерина Сергеевна.
 @Composable
 fun BackButton(
     onClick: () -> Unit,

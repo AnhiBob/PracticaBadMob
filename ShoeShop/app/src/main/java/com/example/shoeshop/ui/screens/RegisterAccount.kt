@@ -1,6 +1,6 @@
 package com.example.shoeshop.ui.screens
 
-import android.graphics.drawable.Icon
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -49,12 +50,16 @@ import com.example.shoeshop.R
 import com.example.shoeshop.ui.components.BackButton
 import com.example.shoeshop.ui.components.DisableButton
 import com.example.shoeshop.ui.theme.ShoeShopTheme
-//Экран регистрации, создан 02.03.2026, Серафимова Екатерина Сергеевна.
+import java.util.regex.Pattern
+
+// Экран регистрации, создан 02.03.2026, Серафимова Екатерина Сергеевна.
 @Composable
 fun RegisterAccount(modifier: Modifier = Modifier,
                     onBackClick: () -> Unit = {},
                     onRegisterClick: () -> Unit = {},
-                    onLoginClick: () -> Unit = {}
+                    onLoginClick: () -> Unit = {},
+                    onTermsClick: () -> Unit = {},
+                    onPrivacyClick: () -> Unit = {}
 ) {
     var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
@@ -62,10 +67,83 @@ fun RegisterAccount(modifier: Modifier = Modifier,
     var passwordVisible by remember { mutableStateOf(false) }
     var isChecked by remember { mutableStateOf(false) }
 
+    // Состояние для диалога с ошибкой
+    var showErrorDialog by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf("") }
+
+    // Функция проверки email
+    fun isValidEmail(email: String): Boolean {
+        if (email.isEmpty()) return true // Пустой email не проверяем, он обрабатывается isNotBlank()
+
+        // Регулярное выражение для проверки email:
+        // name@domenname.ru
+        // где name и domenname - только маленькие буквы и цифры
+        // старший домен (ru) - только буквы, количество больше двух
+        val emailPattern = Pattern.compile(
+            "^[a-z0-9]+@[a-z0-9]+\\.[a-z]{3,}$"
+        )
+        return emailPattern.matcher(email).matches()
+    }
+
+    // Функция получения сообщения об ошибке для email
+    fun getEmailErrorMessage(email: String): String {
+        return when {
+            email.isEmpty() -> "Email не может быть пустым"
+            !email.contains("@") -> "Email должен содержать символ @"
+            else -> {
+                val parts = email.split("@")
+                if (parts.size != 2) {
+                    "Неверный формат email"
+                } else {
+                    val localPart = parts[0]
+                    val domainPart = parts[1]
+
+                    when {
+                        localPart.isEmpty() -> "Отсутствует имя пользователя"
+                        !localPart.matches(Regex("^[a-z0-9]+$")) ->
+                            "Имя пользователя должно содержать только маленькие буквы и цифры"
+                        !domainPart.contains(".") -> "Домен должен содержать точку"
+                        else -> {
+                            val domainParts = domainPart.split(".")
+                            if (domainParts.size != 2) {
+                                "Неверный формат домена"
+                            } else {
+                                val domainName = domainParts[0]
+                                val topLevelDomain = domainParts[1]
+
+                                when {
+                                    domainName.isEmpty() -> "Отсутствует имя домена"
+                                    !domainName.matches(Regex("^[a-z0-9]+$")) ->
+                                        "Имя домена должно содержать только маленькие буквы и цифры"
+                                    topLevelDomain.length < 3 ->
+                                        "Старший домен должен содержать больше 2 символов"
+                                    !topLevelDomain.matches(Regex("^[a-z]+$")) ->
+                                        "Старший домен должен содержать только буквы"
+                                    else -> "Некорректный email"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // Валидация формы
     val isFormValid = name.isNotBlank() &&
-            email.isNotBlank() &&
+            email.isNotBlank() && isValidEmail(email) &&
             password.isNotBlank() &&
             isChecked
+
+    // Обработчик нажатия на кнопку регистрации
+    val onRegisterClickWithValidation = {
+        if (email.isNotBlank() && !isValidEmail(email)) {
+            errorMessage = getEmailErrorMessage(email)
+            showErrorDialog = true
+        } else {
+            onRegisterClick()
+        }
+    }
 
     // Используем цвета из темы
     val hintColor = MaterialTheme.colorScheme.onSurfaceVariant
@@ -89,7 +167,7 @@ fun RegisterAccount(modifier: Modifier = Modifier,
         ) {
             Text(
                 text = stringResource(id = R.string.register),
-                style = MaterialTheme.typography.displayMedium, // Используем тему
+                style = MaterialTheme.typography.displayMedium,
                 color = MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier.padding(bottom = 8.dp)
             )
@@ -138,7 +216,7 @@ fun RegisterAccount(modifier: Modifier = Modifier,
             singleLine = true
         )
 
-        // Поле "Email"
+        // Поле "Email" с индикацией ошибки
         Text(
             text = stringResource(id = R.string.email),
             style = MaterialTheme.typography.bodyLarge,
@@ -149,7 +227,11 @@ fun RegisterAccount(modifier: Modifier = Modifier,
 
         OutlinedTextField(
             value = email,
-            onValueChange = { email = it },
+            onValueChange = {
+                email = it
+                // Сбрасываем ошибку при изменении текста
+                if (showErrorDialog) showErrorDialog = false
+            },
             placeholder = {
                 Text(
                     "......@mail.com",
@@ -172,7 +254,8 @@ fun RegisterAccount(modifier: Modifier = Modifier,
                 unfocusedTextColor = MaterialTheme.colorScheme.onSurface
             ),
             textStyle = MaterialTheme.typography.bodyMedium,
-            singleLine = true
+            singleLine = true,
+            isError = email.isNotBlank() && !isValidEmail(email) // Показываем ошибку в поле
         )
 
         // Поле "Пароль"
@@ -256,7 +339,6 @@ fun RegisterAccount(modifier: Modifier = Modifier,
                     ),
                 contentAlignment = Alignment.Center
             ) {
-                // Фон чекбокса
                 Box(
                     modifier = Modifier
                         .size(24.dp)
@@ -271,7 +353,6 @@ fun RegisterAccount(modifier: Modifier = Modifier,
                         )
                 )
 
-                // Галочка
                 if (isChecked) {
                     Icon(
                         painter = painterResource(id = R.drawable.policy_check),
@@ -286,7 +367,7 @@ fun RegisterAccount(modifier: Modifier = Modifier,
 
             Text(
                 text = stringResource(id = R.string.agree),
-                style = MaterialTheme.typography.bodyMedium,
+                style = MaterialTheme.typography.bodyLarge,
                 color = hintColor,
                 modifier = Modifier.weight(1f)
             )
@@ -297,7 +378,7 @@ fun RegisterAccount(modifier: Modifier = Modifier,
         // Кнопка регистрации
         DisableButton(
             text = stringResource(id = R.string.register),
-            onClick = onRegisterClick,
+            onClick = onRegisterClickWithValidation,
             enabled = isFormValid
         )
 
@@ -332,12 +413,39 @@ fun RegisterAccount(modifier: Modifier = Modifier,
                                 fontWeight = FontWeight.Medium
                             )
                         ) {
-                            append(stringResource(id = R.string.have_acc))
+                            append(stringResource(id = R.string.sign_in))
                         }
                     }
                 )
             }
         }
+    }
+
+    // Диалог с ошибкой
+    if (showErrorDialog) {
+        AlertDialog(
+            onDismissRequest = { showErrorDialog = false },
+            title = {
+                Text(
+                    text = "Ошибка валидации",
+                    style = MaterialTheme.typography.titleLarge,
+                    color = MaterialTheme.colorScheme.error
+                )
+            },
+            text = {
+                Text(
+                    text = errorMessage,
+                    style = MaterialTheme.typography.bodyLarge
+                )
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = { showErrorDialog = false }
+                ) {
+                    Text("OK")
+                }
+            }
+        )
     }
 }
 

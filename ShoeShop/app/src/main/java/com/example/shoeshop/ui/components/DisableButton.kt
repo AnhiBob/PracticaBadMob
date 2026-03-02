@@ -16,7 +16,7 @@ import androidx.compose.ui.unit.dp
 import com.example.shoeshop.R
 import com.example.shoeshop.ui.theme.AppTypography
 
-// DisableButton.kt
+//класс для неактивной кнопки "Зарегистрироваться", создан 02.03.2026, Серафимова Екатерина Сергеевна.
 @Composable
 fun DisableButton(
     text: String,
