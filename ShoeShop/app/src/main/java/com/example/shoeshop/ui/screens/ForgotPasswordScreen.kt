@@ -23,6 +23,9 @@ import com.example.shoeshop.ui.viewmodel.PasswordRecoveryState
 import kotlinx.coroutines.launch
 import kotlin.text.isNotEmpty
 
+// Серафимова Екатерина Сергеевна
+// 03.03.2026
+// Назначение: экран для сброса пароля
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ForgotPasswordScreen(

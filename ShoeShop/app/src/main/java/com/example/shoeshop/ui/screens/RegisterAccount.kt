@@ -69,8 +69,6 @@ import java.util.regex.Pattern
 @Composable
 fun RegisterAccount(modifier: Modifier = Modifier,
                     onBackClick: () -> Unit = {},
-                    onRegisterClick: () -> Unit = {},
-                    onLoginClick: () -> Unit = {},
                     onSignInClick : () -> Unit = {} ,
                     onSignUpClick : () -> Unit = {},
                     viewModel: SignUpViewModel = viewModel()
@@ -198,7 +196,7 @@ fun RegisterAccount(modifier: Modifier = Modifier,
             errorMessage = getEmailErrorMessage(email)
             showErrorDialog = true
         } else {
-            onRegisterClick()
+            onSignUpClick
         }
     }
 
@@ -464,16 +462,18 @@ fun RegisterAccount(modifier: Modifier = Modifier,
             horizontalArrangement = Arrangement.Center
         ) {
             TextButton(
-                onClick = onLoginClick,
+                onClick = {
+                    onSignInClick()
+                },
                 contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp)
             ) {
                 Text(
                     buildAnnotatedString {
                         withStyle(
                             style = SpanStyle(
-                                color = hintColor,
-                                fontFamily = MaterialTheme.typography.bodyMedium.fontFamily,
-                                fontSize = MaterialTheme.typography.bodyMedium.fontSize
+                                color = MaterialTheme.colorScheme.onBackground,
+                                fontFamily = AppTypography.bodyRegular16.fontFamily,
+                                fontSize = AppTypography.bodyRegular16.fontSize
                             )
                         ) {
                             append(stringResource(id = R.string.have_acc))
@@ -481,10 +481,9 @@ fun RegisterAccount(modifier: Modifier = Modifier,
                         append(" ")
                         withStyle(
                             style = SpanStyle(
-                                color = MaterialTheme.colorScheme.primary,
-                                fontFamily = MaterialTheme.typography.bodyMedium.fontFamily,
-                                fontSize = MaterialTheme.typography.bodyMedium.fontSize,
-                                fontWeight = FontWeight.Medium
+                                color = MaterialTheme.colorScheme.onSurface,
+                                fontFamily = AppTypography.bodyRegular16.fontFamily,
+                                fontSize = AppTypography.bodyRegular16.fontSize,
                             )
                         ) {
                             append(stringResource(id = R.string.sign_in))

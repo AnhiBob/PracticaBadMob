@@ -14,7 +14,7 @@ import com.example.shoeshop.ui.screens.SignInScreen
 fun NavigationApp(navController: NavHostController) {
     NavHost(
         navController = navController,
-        startDestination = "start_menu"
+        startDestination = "sign_up"
     ) {
         composable("sign_up") {
             RegisterAccount(

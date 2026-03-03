@@ -1,5 +1,6 @@
 package com.example.shoeshop
 
+import NavigationApp
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -8,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
+import androidx.navigation.compose.rememberNavController
 import com.example.shoeshop.ui.screens.RegisterAccount
 import com.example.shoeshop.ui.theme.ShoeShopTheme
 
@@ -18,8 +20,8 @@ class MainActivity : ComponentActivity() {
         setContent {
             ShoeShopTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-
-                    RegisterAccount(modifier = Modifier.padding(innerPadding))
+                    val navController = rememberNavController()
+                    NavigationApp(navController = navController)
                 }
             }
 
