@@ -44,6 +44,10 @@ fun NavigationApp(navController: NavHostController) {
                 onVerificationSuccess = { navController.navigate("home") }
             )
         }
+        composable("reset_password") {
+            RecoveryVerificationScreen({},{}
+            )
+        }
     }
 }
 
