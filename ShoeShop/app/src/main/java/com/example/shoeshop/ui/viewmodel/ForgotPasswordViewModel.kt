@@ -16,6 +16,10 @@ import kotlin.text.contains
 import kotlin.text.matches
 import kotlin.text.toRegex
 
+
+// Серафимова Екатерина Сергеевна
+// 03.03.2026
+// Назначение: экран для сброса пароля
 class ForgotPasswordViewModel : ViewModel() {
 
     // UI State

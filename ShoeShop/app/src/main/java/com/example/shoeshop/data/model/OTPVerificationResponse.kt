@@ -1,7 +1,10 @@
+import com.example.myfirstproject.data.model.User
 
 
-data class OTPVerificationResponse(
-    val success: Boolean,
-    val message: String? = null,
-    val user_id: String? = null
+data class VerifyOtpResponse(
+    val access_token: String,
+    val token_type: String,
+    val expires_in: Int,
+    val refresh_token: String,
+    val user: User
 )

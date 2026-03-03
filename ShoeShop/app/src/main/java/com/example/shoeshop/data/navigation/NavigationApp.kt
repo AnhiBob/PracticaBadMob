@@ -37,6 +37,13 @@ fun NavigationApp(navController: NavHostController) {
                 onBackClick = {navController.navigate("sign_in")}
             )
         }
+
+        composable("email_verification") {
+            EmailVerificationScreen(
+                onSignInClick = { navController.navigate("sign_in") },
+                onVerificationSuccess = { navController.navigate("home") }
+            )
+        }
     }
 }
 

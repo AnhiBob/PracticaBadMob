@@ -1,5 +1,4 @@
-import OTPVerificationRequest
-import OTPVerificationResponse
+
 import ResendOTPResponse
 import SignInRequest
 import com.example.myfirstproject.data.model.SignInResponse
@@ -40,13 +39,13 @@ interface UserManagementService {
     suspend fun logout(): Response<Unit>
 
     @Headers(
-        "apikey: $API_KEY",
-        "Authorization: Bearer $API_KEY",
-        "Content-Type: application/json",
-        "Prefer: return=minimal"
+        "apikey: ${API_KEY}",
+        "Content-Type: application/json"
     )
     @POST("auth/v1/verify")
-    suspend fun verifyOTP(@Body request: OTPVerificationRequest): Response<OTPVerificationResponse>
+    suspend fun verifyOtp(@Body verifyOtpRequest: VerifyOtpRequest): Response<VerifyOtpResponse>
+    @POST("auth/verify-recovery-otp")
+    suspend fun verifyRecoveryOtp(@Body request: VerifyOtpRequest): Response<VerifyOtpResponse>
 
     @Headers(
         "apikey: $API_KEY",

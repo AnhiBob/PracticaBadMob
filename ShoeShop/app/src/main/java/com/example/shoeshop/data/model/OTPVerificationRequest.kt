@@ -1,7 +1,7 @@
 
 
-data class OTPVerificationRequest(
-    val type: String,
+data class VerifyOtpRequest(
     val email: String,
-    val token: String
+    val token: String,
+    val type: String // "email" или "recovery"
 )
