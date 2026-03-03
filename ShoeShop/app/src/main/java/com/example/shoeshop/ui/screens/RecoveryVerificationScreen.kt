@@ -332,7 +332,6 @@ fun RecoveryVerificationScreenPreview() {
         RecoveryVerificationScreen(
             onSignInClick = {},
             onResetPasswordClick = { resetToken ->
-                // Preview навигация
             }
         )
     }
