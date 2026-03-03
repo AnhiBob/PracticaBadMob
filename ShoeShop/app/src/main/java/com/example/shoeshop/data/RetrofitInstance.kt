@@ -8,7 +8,7 @@ import java.net.InetSocketAddress
 import java.net.Proxy
 
 object RetrofitInstance {
-    const val SUBABASE_URL = "https://quziafnvmfgvycwyoxrr.supabase.co/"
+    const val SUBABASE_URL = "https://wkvhrlqwaxzitkcjkfih.supabase.co/"
 
     private val proxy= Proxy(Proxy.Type.HTTP, InetSocketAddress("10.207.106.59",3128))
     private val loggingInterceptor = HttpLoggingInterceptor().apply {
