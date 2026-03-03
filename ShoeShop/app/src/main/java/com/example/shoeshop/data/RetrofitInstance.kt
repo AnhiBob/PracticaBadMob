@@ -1,6 +1,5 @@
 package com.example.shoeshop.data
 
-import com.example.shoeshop.data.service.UserManagementService
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit

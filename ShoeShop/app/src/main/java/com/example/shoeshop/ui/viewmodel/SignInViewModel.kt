@@ -1,6 +1,3 @@
-// SignInViewModel.kt
-package com.example.myfirstproject.ui.viewModel
-
 import SignInRequest
 import android.util.Log
 import androidx.lifecycle.ViewModel

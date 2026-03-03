@@ -26,6 +26,7 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -34,6 +35,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
@@ -46,20 +48,25 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.myfirstproject.ui.viewModel.SignUpState
+import com.example.myfirstproject.ui.viewModel.SignUpViewModel
 import com.example.shoeshop.R
 import com.example.shoeshop.ui.components.BackButton
 import com.example.shoeshop.ui.components.DisableButton
 import com.example.shoeshop.ui.theme.ShoeShopTheme
 import java.util.regex.Pattern
 
-// Экран регистрации, создан 02.03.2026, Серафимова Екатерина Сергеевна.
+// Серафимова Екатерина Сергеевна
+// 03.03.2026
+// Назначение: класс для регистрации
+
 @Composable
 fun RegisterAccount(modifier: Modifier = Modifier,
                     onBackClick: () -> Unit = {},
                     onRegisterClick: () -> Unit = {},
                     onLoginClick: () -> Unit = {},
-                    onTermsClick: () -> Unit = {},
-                    onPrivacyClick: () -> Unit = {}
 ) {
     var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
@@ -73,7 +80,7 @@ fun RegisterAccount(modifier: Modifier = Modifier,
 
     // Функция проверки email
     fun isValidEmail(email: String): Boolean {
-        if (email.isEmpty()) return true // Пустой email не проверяем, он обрабатывается isNotBlank()
+        if (email.isEmpty()) return false // Пустой email считаем невалидным для проверки
 
         // Регулярное выражение для проверки email:
         // name@domenname.ru
@@ -101,7 +108,7 @@ fun RegisterAccount(modifier: Modifier = Modifier,
                     when {
                         localPart.isEmpty() -> "Отсутствует имя пользователя"
                         !localPart.matches(Regex("^[a-z0-9]+$")) ->
-                            "Имя пользователя должно содержать только маленькие буквы и цифры"
+                            "Имя домена должно содержать только маленькие буквы и цифры"
                         !domainPart.contains(".") -> "Домен должен содержать точку"
                         else -> {
                             val domainParts = domainPart.split(".")
@@ -129,15 +136,16 @@ fun RegisterAccount(modifier: Modifier = Modifier,
         }
     }
 
-    // Валидация формы
+    // Валидация формы (только для активации кнопки - все поля заполнены)
     val isFormValid = name.isNotBlank() &&
-            email.isNotBlank() && isValidEmail(email) &&
+            email.isNotBlank() &&
             password.isNotBlank() &&
             isChecked
 
     // Обработчик нажатия на кнопку регистрации
     val onRegisterClickWithValidation = {
-        if (email.isNotBlank() && !isValidEmail(email)) {
+        // Проверяем email на корректность
+        if (!isValidEmail(email)) {
             errorMessage = getEmailErrorMessage(email)
             showErrorDialog = true
         } else {
@@ -379,7 +387,7 @@ fun RegisterAccount(modifier: Modifier = Modifier,
         DisableButton(
             text = stringResource(id = R.string.register),
             onClick = onRegisterClickWithValidation,
-            enabled = isFormValid
+            enabled = isFormValid  // Кнопка активна когда все поля заполнены, даже если email невалидный
         )
 
         Spacer(modifier = Modifier.height(10.dp))
@@ -444,7 +452,7 @@ fun RegisterAccount(modifier: Modifier = Modifier,
                 ) {
                     Text("OK")
                 }
-            }
+            },
         )
     }
 }

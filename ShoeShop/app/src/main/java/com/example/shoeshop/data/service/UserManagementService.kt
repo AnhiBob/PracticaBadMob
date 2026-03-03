@@ -1,6 +1,3 @@
-// UserManagementService.kt
-package com.example.shoeshop.data.service
-
 import OTPVerificationRequest
 import OTPVerificationResponse
 import ResendOTPResponse
