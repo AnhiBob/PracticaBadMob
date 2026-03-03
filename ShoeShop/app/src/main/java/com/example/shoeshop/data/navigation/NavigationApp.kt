@@ -8,6 +8,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.shoeshop.ui.screens.CreateNewPasswordScreen
 import com.example.shoeshop.ui.screens.ForgotPasswordScreen
+import com.example.shoeshop.ui.screens.OnboardScreen
 import com.example.shoeshop.ui.screens.RegisterAccount
 import com.example.shoeshop.ui.screens.SignInScreen
 
@@ -16,7 +17,7 @@ import com.example.shoeshop.ui.screens.SignInScreen
 fun NavigationApp(navController: NavHostController) {
     NavHost(
         navController = navController,
-        startDestination = "sign_up"
+        startDestination = "start_menu"
     ) {
         composable("sign_up") {
             RegisterAccount(
@@ -63,6 +64,12 @@ fun NavigationApp(navController: NavHostController) {
             CreateNewPasswordScreen(
                 userToken = resetToken,  // Передаем токен в экран
                 onPasswordChanged = { navController.navigate("sign_in") }
+            )
+        }
+
+        composable("start_menu") {
+            OnboardScreen (
+                onGetStartedClick = { navController.navigate("sign_up") },
             )
         }
     }

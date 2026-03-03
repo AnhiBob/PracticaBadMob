@@ -57,6 +57,8 @@ dependencies {
     implementation(libs.navigation.compose)
     implementation(libs.gson)
     implementation("androidx.core:core-splashscreen:1.2.0")
+    implementation("com.google.accompanist:accompanist-pager:0.28.0")
+    implementation("com.google.accompanist:accompanist-pager-indicators:0.28.0")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
