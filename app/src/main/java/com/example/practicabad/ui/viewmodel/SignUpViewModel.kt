@@ -23,15 +23,28 @@ class SignUpViewModel : ViewModel() {
     fun signUp(email: String, password: String) {
         viewModelScope.launch {
             try {
+                Log.d("SignUpVM", "Начинаем регистрацию для email: $email")
                 _signUpState.value = SignUpState.Loading
 
                 val response = RetrofitInstance.userManagementService.signUp(
                     SignUpRequest(email, password)
                 )
 
+                Log.d("SignUpVM", "Код ответа: ${response.code()}")
+                Log.d("SignUpVM", "Успешно: ${response.isSuccessful}")
+
                 if (response.isSuccessful) {
-                    _signUpState.value = SignUpState.Success
+                    response.body()?.let {
+                        Log.d("SignUpVM", "Успех! ID пользователя: ${it.id}")
+                        _signUpState.value = SignUpState.Success
+                    } ?: run {
+                        Log.e("SignUpVM", "Тело ответа пустое")
+                        _signUpState.value = SignUpState.Error("Пустой ответ от сервера")
+                    }
                 } else {
+                    val errorBody = response.errorBody()?.string()
+                    Log.e("SignUpVM", "Ошибка: ${response.code()} - $errorBody")
+
                     val errorMessage = when (response.code()) {
                         400 -> "Неверный email или пароль"
                         422 -> "Неверный формат email"
@@ -41,13 +54,15 @@ class SignUpViewModel : ViewModel() {
                     _signUpState.value = SignUpState.Error(errorMessage)
                 }
             } catch (e: Exception) {
+                Log.e("SignUpVM", "Исключение: ${e.message}", e)
+
                 val errorMessage = when (e) {
                     is java.net.ConnectException -> "Нет подключения к интернету"
                     is java.net.SocketTimeoutException -> "Таймаут соединения"
+                    is java.net.UnknownHostException -> "Не удается найти хост. Проверьте интернет"
                     else -> "Ошибка сети: ${e.message}"
                 }
                 _signUpState.value = SignUpState.Error(errorMessage)
-                Log.e("SignUpViewModel", "Error: ${e.message}", e)
             }
         }
     }
