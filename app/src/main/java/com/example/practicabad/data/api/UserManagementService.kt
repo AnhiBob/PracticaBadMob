@@ -4,7 +4,7 @@ import com.example.practicabad.data.model.*
 import retrofit2.Response
 import retrofit2.http.*
 
-const val API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZneWhydXlsYmlmdmx4bHl3YWJ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI1NDc3NTgsImV4cCI6MjA4ODEyMzc1OH0.JoinvvEiL1IgvuM3-5nGJLDttWKUikEmrCb3biweAQw"
+const val API_KEY = "sb_publishable_g91qJqa_he7kqPFZ2_6-2Q_qLHs-2o5"
 
 interface UserManagementService {
 
