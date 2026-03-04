@@ -15,7 +15,9 @@ import com.example.practicabad.R
 import java.util.regex.Pattern
 
 @Composable
-fun RegisterAccountScreen() {
+fun RegisterAccountScreen(
+    onSignInClick: () -> Unit = {}
+) {
     var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -142,6 +144,19 @@ fun RegisterAccountScreen() {
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Зарегистрироваться")
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Ссылка на вход
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Text("Уже есть аккаунт? ")
+            TextButton(onClick = onSignInClick) {
+                Text("Войти")
+            }
         }
     }
 
