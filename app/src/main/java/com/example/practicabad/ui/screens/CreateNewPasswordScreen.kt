@@ -6,17 +6,23 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.practicabad.R
+import com.example.practicabad.ui.viewmodel.ChangePasswordState
+import com.example.practicabad.ui.viewmodel.CreateNewPasswordViewModel
 
 @Composable
 fun CreateNewPasswordScreen(
     onBackClick: () -> Unit = {},
-    onSaveClick: () -> Unit = {}
+    onSaveClick: () -> Unit = {},
+    resetToken: String = "",
+    viewModel: CreateNewPasswordViewModel = viewModel()
 ) {
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
@@ -25,6 +31,28 @@ fun CreateNewPasswordScreen(
 
     var passwordError by remember { mutableStateOf<String?>(null) }
     var confirmError by remember { mutableStateOf<String?>(null) }
+    var showErrorDialog by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf("") }
+    var showSuccessDialog by remember { mutableStateOf(false) }
+
+    val state by viewModel.state.collectAsState()
+    val context = LocalContext.current
+
+    // Обработка состояния смены пароля
+    LaunchedEffect(state) {
+        when (state) {
+            is ChangePasswordState.Success -> {
+                showSuccessDialog = true
+                viewModel.resetState()
+            }
+            is ChangePasswordState.Error -> {
+                errorMessage = (state as ChangePasswordState.Error).message
+                showErrorDialog = true
+                viewModel.resetState()
+            }
+            else -> {}
+        }
+    }
 
     fun validatePasswords(): Boolean {
         var isValid = true
@@ -46,6 +74,10 @@ fun CreateNewPasswordScreen(
         return isValid
     }
 
+    val isButtonEnabled = password.isNotBlank() &&
+            confirmPassword.isNotBlank() &&
+            state !is ChangePasswordState.Loading
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -57,7 +89,10 @@ fun CreateNewPasswordScreen(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Start
         ) {
-            TextButton(onClick = onBackClick) {
+            TextButton(
+                onClick = onBackClick,
+                enabled = state !is ChangePasswordState.Loading
+            ) {
                 Text("← Назад")
             }
         }
@@ -82,7 +117,10 @@ fun CreateNewPasswordScreen(
             visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
             trailingIcon = {
-                IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                IconButton(
+                    onClick = { passwordVisible = !passwordVisible },
+                    enabled = state !is ChangePasswordState.Loading
+                ) {
                     Icon(
                         painter = painterResource(
                             id = if (passwordVisible) R.drawable.eye_close else R.drawable.eye_open
@@ -92,7 +130,8 @@ fun CreateNewPasswordScreen(
                 }
             },
             singleLine = true,
-            isError = passwordError != null
+            isError = passwordError != null,
+            enabled = state !is ChangePasswordState.Loading
         )
 
         if (passwordError != null) {
@@ -100,7 +139,9 @@ fun CreateNewPasswordScreen(
                 text = passwordError!!,
                 color = MaterialTheme.colorScheme.error,
                 style = MaterialTheme.typography.bodySmall,
-                modifier = Modifier.align(Alignment.Start).padding(top = 4.dp)
+                modifier = Modifier
+                    .align(Alignment.Start)
+                    .padding(top = 4.dp)
             )
         }
 
@@ -118,7 +159,10 @@ fun CreateNewPasswordScreen(
             visualTransformation = if (confirmVisible) VisualTransformation.None else PasswordVisualTransformation(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
             trailingIcon = {
-                IconButton(onClick = { confirmVisible = !confirmVisible }) {
+                IconButton(
+                    onClick = { confirmVisible = !confirmVisible },
+                    enabled = state !is ChangePasswordState.Loading
+                ) {
                     Icon(
                         painter = painterResource(
                             id = if (confirmVisible) R.drawable.eye_close else R.drawable.eye_open
@@ -128,7 +172,8 @@ fun CreateNewPasswordScreen(
                 }
             },
             singleLine = true,
-            isError = confirmError != null
+            isError = confirmError != null,
+            enabled = state !is ChangePasswordState.Loading
         )
 
         if (confirmError != null) {
@@ -136,22 +181,69 @@ fun CreateNewPasswordScreen(
                 text = confirmError!!,
                 color = MaterialTheme.colorScheme.error,
                 style = MaterialTheme.typography.bodySmall,
-                modifier = Modifier.align(Alignment.Start).padding(top = 4.dp)
+                modifier = Modifier
+                    .align(Alignment.Start)
+                    .padding(top = 4.dp)
             )
         }
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        Button(
-            onClick = {
-                if (validatePasswords()) {
-                    onSaveClick()
-                }
-            },
-            modifier = Modifier.fillMaxWidth(),
-            enabled = password.isNotBlank() && confirmPassword.isNotBlank()
-        ) {
-            Text("Сохранить")
+        // Кнопка сохранения или индикатор загрузки
+        if (state is ChangePasswordState.Loading) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
+        } else {
+            Button(
+                onClick = {
+                    if (validatePasswords()) {
+                        viewModel.changePassword(resetToken, password)
+                    }
+                },
+                modifier = Modifier.fillMaxWidth(),
+                enabled = isButtonEnabled
+            ) {
+                Text("Сохранить")
+            }
         }
+    }
+
+    // Диалог ошибки
+    if (showErrorDialog) {
+        AlertDialog(
+            onDismissRequest = { showErrorDialog = false },
+            title = { Text("Ошибка") },
+            text = { Text(errorMessage) },
+            confirmButton = {
+                TextButton(onClick = { showErrorDialog = false }) {
+                    Text("OK")
+                }
+            }
+        )
+    }
+
+    // Диалог успеха
+    if (showSuccessDialog) {
+        AlertDialog(
+            onDismissRequest = { showSuccessDialog = false },
+            title = { Text("Успех") },
+            text = { Text("Пароль успешно изменен") },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showSuccessDialog = false
+                        onSaveClick()
+                    }
+                ) {
+                    Text("OK")
+                }
+            }
+        )
     }
 }

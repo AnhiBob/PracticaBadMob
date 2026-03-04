@@ -6,22 +6,32 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.practicabad.ui.viewmodel.OtpVerificationState
+import com.example.practicabad.ui.viewmodel.OtpVerificationViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
 fun OtpVerificationScreen(
     onBackClick: () -> Unit = {},
-    onVerifyClick: () -> Unit = {}
+    onVerifyClick: (resetToken: String) -> Unit = {},
+    viewModel: OtpVerificationViewModel = viewModel()
 ) {
     var otpCode by remember { mutableStateOf("") }
     var timer by remember { mutableStateOf(60) }
     var isTimerActive by remember { mutableStateOf(true) }
     var isError by remember { mutableStateOf(false) }
+    var userEmail by remember { mutableStateOf("test@mail.com") } // В реальном проекте получать из предыдущего экрана
+    var showErrorDialog by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf("") }
 
+    val state by viewModel.state.collectAsState()
     val scope = rememberCoroutineScope()
+    val context = LocalContext.current
 
     // Таймер
     LaunchedEffect(isTimerActive) {
@@ -31,6 +41,29 @@ fun OtpVerificationScreen(
                 timer--
             }
             isTimerActive = false
+        }
+    }
+
+    // Обработка состояния верификации
+    LaunchedEffect(state) {
+        when (state) {
+            is OtpVerificationState.Success -> {
+                val token = (state as OtpVerificationState.Success).resetToken
+                if (token != null) {
+                    onVerifyClick(token)
+                } else {
+                    errorMessage = "Ошибка получения токена"
+                    showErrorDialog = true
+                }
+                viewModel.resetState()
+            }
+            is OtpVerificationState.Error -> {
+                errorMessage = (state as OtpVerificationState.Error).message
+                showErrorDialog = true
+                isError = true
+                viewModel.resetState()
+            }
+            else -> {}
         }
     }
 
@@ -45,7 +78,10 @@ fun OtpVerificationScreen(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Start
         ) {
-            TextButton(onClick = onBackClick) {
+            TextButton(
+                onClick = onBackClick,
+                enabled = state !is OtpVerificationState.Loading
+            ) {
                 Text("← Назад")
             }
         }
@@ -77,6 +113,7 @@ fun OtpVerificationScreen(
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             singleLine = true,
             isError = isError,
+            enabled = state !is OtpVerificationState.Loading,
             supportingText = if (isError) {
                 { Text("Неверный код", color = MaterialTheme.colorScheme.error) }
             } else null
@@ -92,7 +129,9 @@ fun OtpVerificationScreen(
                 onClick = {
                     timer = 60
                     isTimerActive = true
-                }
+                    // TODO: повторная отправка кода
+                },
+                enabled = state !is OtpVerificationState.Loading
             ) {
                 Text("Отправить код повторно")
             }
@@ -100,21 +139,40 @@ fun OtpVerificationScreen(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        Button(
-            onClick = {
-                if (otpCode.length == 6) {
-                    // TODO: проверить код
-                    if (otpCode == "123456") { // для примера
-                        onVerifyClick()
-                    } else {
-                        isError = true
-                    }
-                }
-            },
-            modifier = Modifier.fillMaxWidth(),
-            enabled = otpCode.length == 6
-        ) {
-            Text("Подтвердить")
+        // Кнопка подтверждения или индикатор загрузки
+        if (state is OtpVerificationState.Loading) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
+        } else {
+            Button(
+                onClick = {
+                    viewModel.verifyOtp(userEmail, otpCode, "recovery")
+                },
+                modifier = Modifier.fillMaxWidth(),
+                enabled = otpCode.length == 6
+            ) {
+                Text("Подтвердить")
+            }
         }
+    }
+
+    // Диалог ошибки
+    if (showErrorDialog) {
+        AlertDialog(
+            onDismissRequest = { showErrorDialog = false },
+            title = { Text("Ошибка") },
+            text = { Text(errorMessage) },
+            confirmButton = {
+                TextButton(onClick = { showErrorDialog = false }) {
+                    Text("OK")
+                }
+            }
+        )
     }
 }
