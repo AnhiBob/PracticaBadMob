@@ -8,7 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import com.example.practicabad.ui.screens.RegisterAccountScreen
-import com.example.practicabad.ui.theme.PracticaBadTheme
+import com.example.practicabad.ui.theme.PracticaBadTheme   // ЭТОТ ИМПОРТ ДОЛЖЕН БЫТЬ
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
