@@ -6,17 +6,23 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.practicabad.R
+import com.example.practicabad.ui.viewmodel.SignUpState
+import com.example.practicabad.ui.viewmodel.SignUpViewModel
 import java.util.regex.Pattern
 
 @Composable
 fun RegisterAccountScreen(
-    onSignInClick: () -> Unit = {}
+    onSignInClick: () -> Unit = {},
+    onSignUpSuccess: () -> Unit = {},
+    viewModel: SignUpViewModel = viewModel()
 ) {
     var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
@@ -25,6 +31,25 @@ fun RegisterAccountScreen(
     var isAgreed by remember { mutableStateOf(false) }
     var showErrorDialog by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf("") }
+
+    val signUpState by viewModel.signUpState.collectAsState()
+    val context = LocalContext.current
+
+    // Обработка состояния регистрации
+    LaunchedEffect(signUpState) {
+        when (signUpState) {
+            is SignUpState.Success -> {
+                onSignUpSuccess()
+                viewModel.resetState()
+            }
+            is SignUpState.Error -> {
+                errorMessage = (signUpState as SignUpState.Error).message
+                showErrorDialog = true
+                viewModel.resetState()
+            }
+            else -> {}
+        }
+    }
 
     // Функция проверки email
     fun isValidEmail(email: String): Boolean {
@@ -40,7 +65,8 @@ fun RegisterAccountScreen(
     val isButtonEnabled = name.isNotBlank() &&
             email.isNotBlank() &&
             password.isNotBlank() &&
-            isAgreed
+            isAgreed &&
+            signUpState !is SignUpState.Loading
 
     Column(
         modifier = Modifier
@@ -61,7 +87,8 @@ fun RegisterAccountScreen(
             onValueChange = { name = it },
             label = { Text("Имя") },
             modifier = Modifier.fillMaxWidth(),
-            singleLine = true
+            singleLine = true,
+            enabled = signUpState !is SignUpState.Loading
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -74,7 +101,8 @@ fun RegisterAccountScreen(
             modifier = Modifier.fillMaxWidth(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
             singleLine = true,
-            isError = email.isNotEmpty() && !isValidEmail(email)
+            isError = email.isNotEmpty() && !isValidEmail(email),
+            enabled = signUpState !is SignUpState.Loading
         )
 
         if (email.isNotEmpty() && !isValidEmail(email)) {
@@ -97,7 +125,10 @@ fun RegisterAccountScreen(
             visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
             trailingIcon = {
-                IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                IconButton(
+                    onClick = { passwordVisible = !passwordVisible },
+                    enabled = signUpState !is SignUpState.Loading
+                ) {
                     Icon(
                         painter = painterResource(
                             id = if (passwordVisible) R.drawable.eye_close
@@ -108,7 +139,8 @@ fun RegisterAccountScreen(
                     )
                 }
             },
-            singleLine = true
+            singleLine = true,
+            enabled = signUpState !is SignUpState.Loading
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -120,7 +152,8 @@ fun RegisterAccountScreen(
         ) {
             Checkbox(
                 checked = isAgreed,
-                onCheckedChange = { isAgreed = it }
+                onCheckedChange = { isAgreed = it },
+                enabled = signUpState !is SignUpState.Loading
             )
             Text(
                 text = "Я согласен на обработку персональных данных",
@@ -130,20 +163,31 @@ fun RegisterAccountScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Кнопка регистрации
-        Button(
-            onClick = {
-                if (!isValidEmail(email)) {
-                    errorMessage = "Неверный формат email"
-                    showErrorDialog = true
-                } else {
-                    // TODO: регистрация
-                }
-            },
-            enabled = isButtonEnabled,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text("Зарегистрироваться")
+        // Кнопка регистрации или индикатор загрузки
+        if (signUpState is SignUpState.Loading) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
+        } else {
+            Button(
+                onClick = {
+                    if (!isValidEmail(email)) {
+                        errorMessage = "Неверный формат email"
+                        showErrorDialog = true
+                    } else {
+                        viewModel.signUp(email, password)
+                    }
+                },
+                enabled = isButtonEnabled,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Зарегистрироваться")
+            }
         }
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -154,7 +198,10 @@ fun RegisterAccountScreen(
             horizontalArrangement = Arrangement.Center
         ) {
             Text("Уже есть аккаунт? ")
-            TextButton(onClick = onSignInClick) {
+            TextButton(
+                onClick = onSignInClick,
+                enabled = signUpState !is SignUpState.Loading
+            ) {
                 Text("Войти")
             }
         }
