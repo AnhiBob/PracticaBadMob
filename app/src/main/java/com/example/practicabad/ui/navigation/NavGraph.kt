@@ -1,6 +1,7 @@
 package com.example.practicabad.ui.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -12,8 +13,18 @@ fun NavGraph() {
 
     NavHost(
         navController = navController,
-        startDestination = "sign_in"
+        startDestination = "onboarding"  // Меняем стартовый экран
     ) {
+        composable("onboarding") {
+            OnboardScreen(
+                onGetStartedClick = {
+                    navController.navigate("sign_in") {
+                        popUpTo("onboarding") { inclusive = true }
+                    }
+                }
+            )
+        }
+
         composable("sign_in") {
             SignInScreen(
                 onSignUpClick = {
@@ -21,6 +32,9 @@ fun NavGraph() {
                 },
                 onForgotPasswordClick = {
                     navController.navigate("forgot_password")
+                },
+                onSignInSuccess = {
+                    navController.navigate("home")
                 }
             )
         }
@@ -31,6 +45,9 @@ fun NavGraph() {
                     navController.navigate("sign_in") {
                         popUpTo("sign_up") { inclusive = true }
                     }
+                },
+                onSignUpSuccess = {
+                    navController.navigate("home")
                 }
             )
         }
@@ -51,13 +68,14 @@ fun NavGraph() {
                 onBackClick = {
                     navController.popBackStack()
                 },
-                onVerifyClick = {
-                    navController.navigate("create_new_password")
+                onVerifyClick = { resetToken ->
+                    navController.navigate("create_new_password/$resetToken")
                 }
             )
         }
 
-        composable("create_new_password") {
+        composable("create_new_password/{resetToken}") { backStackEntry ->
+            val resetToken = backStackEntry.arguments?.getString("resetToken") ?: ""
             CreateNewPasswordScreen(
                 onBackClick = {
                     navController.popBackStack()
@@ -66,8 +84,14 @@ fun NavGraph() {
                     navController.navigate("sign_in") {
                         popUpTo("create_new_password") { inclusive = true }
                     }
-                }
+                },
+                resetToken = resetToken
             )
+        }
+
+        composable("home") {
+            // TODO: добавить HomeScreen
+            Text("Home Screen")
         }
     }
 }
