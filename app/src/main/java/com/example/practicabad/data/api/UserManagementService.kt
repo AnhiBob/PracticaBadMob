@@ -1,0 +1,48 @@
+package com.example.practicabad.data.api
+
+import com.example.practicabad.data.model.*
+import retrofit2.Response
+import retrofit2.http.*
+
+const val API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZneWhydXlsYmlmdmx4bHl3YWJ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI1NDc3NTgsImV4cCI6MjA4ODEyMzc1OH0.JoinvvEiL1IgvuM3-5nGJLDttWKUikEmrCb3biweAQw"
+
+interface UserManagementService {
+
+    @Headers(
+        "apikey: $API_KEY",
+        "Content-Type: application/json"
+    )
+    @POST("auth/v1/signup")
+    suspend fun signUp(@Body signUpRequest: SignUpRequest): Response<SignUpResponse>
+
+    @Headers(
+        "apikey: $API_KEY",
+        "Content-Type: application/json"
+    )
+    @POST("auth/v1/token?grant_type=password")
+    suspend fun signIn(@Body signInRequest: SignInRequest): Response<SignInResponse>
+
+    @Headers(
+        "apikey: $API_KEY",
+        "Content-Type: application/json"
+    )
+    @POST("auth/v1/recover")
+    suspend fun recoverPassword(@Body request: ForgotPasswordRequest): Response<ForgotPasswordResponse>
+
+    @Headers(
+        "apikey: $API_KEY",
+        "Content-Type: application/json"
+    )
+    @POST("auth/v1/verify")
+    suspend fun verifyOtp(@Body request: VerifyOtpRequest): Response<VerifyOtpResponse>
+
+    @Headers(
+        "apikey: $API_KEY",
+        "Content-Type: application/json"
+    )
+    @PUT("auth/v1/user")
+    suspend fun changePassword(
+        @Header("Authorization") authorization: String,
+        @Body request: ChangePasswordRequest
+    ): Response<ChangePasswordResponse>
+}
