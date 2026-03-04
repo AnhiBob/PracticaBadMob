@@ -4,9 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.practicabad.ui.screens.RegisterAccountScreen
-import com.example.practicabad.ui.screens.SignInScreen
-import com.example.practicabad.ui.screens.ForgotPasswordScreen
+import com.example.practicabad.ui.screens.*
 
 @Composable
 fun NavGraph() {
@@ -22,29 +20,52 @@ fun NavGraph() {
                     navController.navigate("sign_up")
                 },
                 onForgotPasswordClick = {
-                    // TODO: перейти на восстановление пароля
+                    navController.navigate("forgot_password")
                 }
             )
         }
 
-        composable("sign_in") {
-            SignInScreen(
-                onSignUpClick = {
-                    navController.navigate("sign_up")
-                },
-                onForgotPasswordClick = {
-                    navController.navigate("forgot_password")  // Добавь это
+        composable("sign_up") {
+            RegisterAccountScreen(
+                onSignInClick = {
+                    navController.navigate("sign_in") {
+                        popUpTo("sign_up") { inclusive = true }
+                    }
                 }
             )
         }
+
         composable("forgot_password") {
             ForgotPasswordScreen(
                 onBackClick = {
                     navController.popBackStack()
                 },
                 onSendClick = {
-                    // TODO: перейти на экран OTP
                     navController.navigate("otp_verification")
+                }
+            )
+        }
+
+        composable("otp_verification") {
+            OtpVerificationScreen(
+                onBackClick = {
+                    navController.popBackStack()
+                },
+                onVerifyClick = {
+                    navController.navigate("create_new_password")
+                }
+            )
+        }
+
+        composable("create_new_password") {
+            CreateNewPasswordScreen(
+                onBackClick = {
+                    navController.popBackStack()
+                },
+                onSaveClick = {
+                    navController.navigate("sign_in") {
+                        popUpTo("create_new_password") { inclusive = true }
+                    }
                 }
             )
         }
