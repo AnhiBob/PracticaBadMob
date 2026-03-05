@@ -6,8 +6,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -24,13 +24,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextDecoration
 import com.example.practicabad.R
 import com.example.practicabad.ui.model.Product
 import kotlinx.coroutines.launch
@@ -43,7 +41,6 @@ fun ProductDetailScreen(
     onAddToCartClick: (String) -> Unit,
     onFavoriteClick: (String, Boolean) -> Unit
 ) {
-    // Тестовые данные товаров (в реальном проекте загружались бы с сервера)
     val allProducts = listOf(
         Product(
             id = "1",
@@ -84,26 +81,62 @@ fun ProductDetailScreen(
             description = "Ностальгические кеды в стиле ретро перенесут вас в прошлое с классическим холщовым верхом для воздухопроницаемости и комфорта. Контрастная резиновая подошва добавляет винтажный штрих. Удобный круглый носок и гибкая конструкция делают их идеальными для повседневных прогулок и неформальных мероприятий.",
             imageRes = R.drawable.image_1,
             isFavorite = false
+        ),
+        Product(
+            id = "5",
+            name = "New Balance 574",
+            price = "14 999 ₽",
+            oldPrice = null,
+            category = "Outdoor",
+            description = "Классическая модель для повседневной носки с превосходной амортизацией. Верх из замши и сетки обеспечивает комфорт и долговечность. Универсальный дизайн подходит для любого образа.",
+            imageRes = R.drawable.image_2,
+            isFavorite = false
+        ),
+        Product(
+            id = "6",
+            name = "Converse Chuck Taylor",
+            price = "7 999 ₽",
+            oldPrice = "9 999 ₽",
+            category = "Кежуал",
+            description = "Легендарные кеды, которые никогда не выходят из моды. Холщовый верх, резиновая подошва и узнаваемый дизайн делают их фаворитами уже много десятилетий.",
+            imageRes = R.drawable.image_3,
+            isFavorite = false
+        ),
+        Product(
+            id = "7",
+            name = "Vans Old Skool",
+            price = "8 999 ₽",
+            oldPrice = null,
+            category = "Кежуал",
+            description = "Классические скейтерские кеды с замшевыми вставками и фирменной боковой полосой. Прочные и стильные, созданы для повседневной носки.",
+            imageRes = R.drawable.image_1,
+            isFavorite = false
+        ),
+        Product(
+            id = "8",
+            name = "Asics Gel-Kayano",
+            price = "15 999 ₽",
+            oldPrice = "17 999 ₽",
+            category = "Бег",
+            description = "Профессиональные беговые кроссовки с технологией гелевой амортизации. Обеспечивают максимальную поддержку и комфорт на длинных дистанциях.",
+            imageRes = R.drawable.image_2,
+            isFavorite = false
         )
     )
 
-    val currentProduct = allProducts.find { it.id == productId } ?: allProducts[0]
-    val productsForSwipe = allProducts
-    val currentIndex = productsForSwipe.indexOfFirst { it.id == productId }.coerceAtLeast(0)
-
-    var isFavorite by remember { mutableStateOf(currentProduct.isFavorite) }
-    var isDescriptionExpanded by remember { mutableStateOf(false) }
-
-    val pagerState = rememberPagerState { productsForSwipe.size }
+    val currentIndex = allProducts.indexOfFirst { it.id == productId }.coerceAtLeast(0)
+    val pagerState = rememberPagerState { allProducts.size }
     val coroutineScope = rememberCoroutineScope()
+
+    var isDescriptionExpanded by remember { mutableStateOf(false) }
+    var isFavorite by remember { mutableStateOf(allProducts[currentIndex].isFavorite) }
 
     LaunchedEffect(Unit) {
         pagerState.scrollToPage(currentIndex)
     }
 
     LaunchedEffect(pagerState.currentPage) {
-        val newProduct = productsForSwipe[pagerState.currentPage]
-        isFavorite = newProduct.isFavorite
+        isFavorite = allProducts[pagerState.currentPage].isFavorite
     }
 
     Column(
@@ -136,7 +169,7 @@ fun ProductDetailScreen(
             IconButton(
                 onClick = {
                     isFavorite = !isFavorite
-                    onFavoriteClick(productsForSwipe[pagerState.currentPage].id, isFavorite)
+                    onFavoriteClick(allProducts[pagerState.currentPage].id, isFavorite)
                 }
             ) {
                 Icon(
@@ -147,7 +180,7 @@ fun ProductDetailScreen(
             }
         }
 
-        // Галерея изображений (горизонтальный пейджер)
+        // Галерея изображений
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -159,8 +192,8 @@ fun ProductDetailScreen(
                 modifier = Modifier.fillMaxSize()
             ) { page ->
                 Image(
-                    painter = painterResource(id = productsForSwipe[page].imageRes),
-                    contentDescription = productsForSwipe[page].name,
+                    painter = painterResource(id = allProducts[page].imageRes),
+                    contentDescription = allProducts[page].name,
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(16.dp),
@@ -168,14 +201,14 @@ fun ProductDetailScreen(
                 )
             }
 
-            // Индикаторы страниц
+            // Индикаторы
             Row(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .padding(bottom = 16.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                repeat(productsForSwipe.size) { index ->
+                repeat(allProducts.size) { index ->
                     Box(
                         modifier = Modifier
                             .size(if (pagerState.currentPage == index) 10.dp else 8.dp)
@@ -197,16 +230,17 @@ fun ProductDetailScreen(
                 .verticalScroll(rememberScrollState())
                 .padding(16.dp)
         ) {
-            // Категория и название
+            val currentProduct = allProducts[pagerState.currentPage]
+
             Text(
-                text = productsForSwipe[pagerState.currentPage].category,
+                text = currentProduct.category,
                 fontSize = 14.sp,
                 color = MaterialTheme.colorScheme.primary,
                 fontWeight = FontWeight.Medium
             )
 
             Text(
-                text = productsForSwipe[pagerState.currentPage].name,
+                text = currentProduct.name,
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(top = 4.dp)
@@ -214,18 +248,17 @@ fun ProductDetailScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Цена
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = productsForSwipe[pagerState.currentPage].price,
+                    text = currentProduct.price,
                     fontSize = 28.sp,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary
                 )
 
-                productsForSwipe[pagerState.currentPage].oldPrice?.let {
+                currentProduct.oldPrice?.let {
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
                         text = it,
@@ -238,7 +271,6 @@ fun ProductDetailScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Описание
             Text(
                 text = "Описание",
                 fontSize = 18.sp,
@@ -248,14 +280,13 @@ fun ProductDetailScreen(
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = productsForSwipe[pagerState.currentPage].description ?: "Описание отсутствует",
+                text = currentProduct.description ?: "Описание отсутствует",
                 fontSize = 14.sp,
                 lineHeight = 20.sp,
                 maxLines = if (isDescriptionExpanded) Int.MAX_VALUE else 3,
                 overflow = TextOverflow.Ellipsis
             )
 
-            // Кнопка "Подробнее"
             TextButton(
                 onClick = { isDescriptionExpanded = !isDescriptionExpanded },
                 modifier = Modifier.padding(top = 4.dp)
@@ -268,9 +299,8 @@ fun ProductDetailScreen(
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            // Кнопка добавления в корзину
             Button(
-                onClick = { onAddToCartClick(productsForSwipe[pagerState.currentPage].id) },
+                onClick = { onAddToCartClick(currentProduct.id) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp),
