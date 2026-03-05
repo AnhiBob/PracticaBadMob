@@ -169,5 +169,15 @@ fun NavGraph() {
                 modifier = androidx.compose.ui.Modifier.fillMaxSize()
             )
         }
+        composable("catalog") {
+            CatalogScreen(
+                onProductClick = { productId ->
+                    navController.navigate("product_detail/$productId")
+                },
+                onBackClick = {
+                    navController.popBackStack()
+                }
+            )
+        }
     }
 }

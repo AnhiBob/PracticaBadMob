@@ -369,7 +369,7 @@ fun HomeScreen(
                                             indication = null,
                                             interactionSource = remember { MutableInteractionSource() }
                                         ) {
-                                            // Переход ко всем новинкам
+                                            navController.navigate("catalog")
                                         }
                                     )
                                 }
