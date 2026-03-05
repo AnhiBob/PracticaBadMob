@@ -179,5 +179,15 @@ fun NavGraph() {
                 }
             )
         }
+        composable("favorite") {
+            FavoriteScreen(
+                onProductClick = { productId ->
+                    navController.navigate("product_detail/$productId")
+                },
+                onBackClick = {
+                    navController.popBackStack()
+                }
+            )
+        }
     }
 }
