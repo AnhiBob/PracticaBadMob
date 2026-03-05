@@ -8,6 +8,7 @@ data class Product(
     val price: String,
     val oldPrice: String? = null,
     val category: String,
+    val description: String? = null,  // ← ДОБАВИЛИ ЭТО ПОЛЕ
     @DrawableRes val imageRes: Int,
     val isFavorite: Boolean = false
 )

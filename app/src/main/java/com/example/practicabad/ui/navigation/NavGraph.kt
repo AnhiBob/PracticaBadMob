@@ -189,5 +189,22 @@ fun NavGraph() {
                 }
             )
         }
+        composable("product_detail/{productId}") { backStackEntry ->
+            val productId = backStackEntry.arguments?.getString("productId") ?: ""
+            ProductDetailScreen(
+                productId = productId,
+                onBackClick = {
+                    navController.popBackStack()
+                },
+                onAddToCartClick = { id ->
+                    // TODO: добавить в корзину
+                    println("Добавлено в корзину: $id")
+                },
+                onFavoriteClick = { id, isFavorite ->
+                    // TODO: обновить избранное
+                    println("Товар $id избранное: $isFavorite")
+                }
+            )
+        }
     }
 }
