@@ -96,11 +96,9 @@ fun NavGraph() {
         composable("home") {
             HomeScreen(
                 onProductClick = { productId ->
-                    // Переход на детали товара (День 3)
                     navController.navigate("product_detail/$productId")
                 },
                 onCartClick = {
-                    // Переход в корзину (День 4)
                     navController.navigate("cart")
                 },
                 onSearchClick = {
@@ -114,6 +112,9 @@ fun NavGraph() {
                 },
                 onNotificationsClick = {
                     navController.navigate("notifications")
+                },
+                onCatalogClick = {  // ← ЭТОТ ПАРАМЕТР НУЖНО ДОБАВИТЬ
+                    navController.navigate("catalog")
                 }
             )
         }
@@ -121,10 +122,10 @@ fun NavGraph() {
         composable("profile") {
             ProfileScreen(
                 onEditProfileClick = {
-                    // Режим редактирования уже внутри экрана
+                    // Режим редактирования внутри экрана
                 },
                 onChangePhotoClick = {
-                    // Камера уже внутри экрана
+                    // Открыть камеру
                 },
                 onSaveClick = {
                     navController.popBackStack()

@@ -38,7 +38,8 @@ fun HomeScreen(
     onSearchClick: () -> Unit,
     onProfileClick: () -> Unit,
     onFavoriteClick: () -> Unit,
-    onNotificationsClick: () -> Unit
+    onNotificationsClick: () -> Unit,
+    onCatalogClick: () -> Unit  // Добавлен новый параметр
 ) {
     var selectedItem by remember { mutableStateOf(0) }
     var selectedCategory by remember { mutableStateOf("all") }
@@ -60,6 +61,7 @@ fun HomeScreen(
             price = "13 999 ₽",
             oldPrice = "15 999 ₽",
             category = "Outdoor",
+            description = "Ретро-кроссовки в стиле баскетбола",
             imageRes = R.drawable.image_1,
             isFavorite = false
         ),
@@ -69,6 +71,7 @@ fun HomeScreen(
             price = "17 999 ₽",
             oldPrice = null,
             category = "Бег",
+            description = "Беговые кроссовки с инновационной амортизацией",
             imageRes = R.drawable.image_2,
             isFavorite = false
         ),
@@ -78,6 +81,7 @@ fun HomeScreen(
             price = "12 999 ₽",
             oldPrice = null,
             category = "Кежуал",
+            description = "Сочетание ретро-вдохновения с современными технологиями",
             imageRes = R.drawable.image_3,
             isFavorite = false
         ),
@@ -87,6 +91,7 @@ fun HomeScreen(
             price = "9 999 ₽",
             oldPrice = "11 999 ₽",
             category = "Кежуал",
+            description = "Ностальгические кеды в стиле ретро",
             imageRes = R.drawable.image_1,
             isFavorite = false
         ),
@@ -96,6 +101,7 @@ fun HomeScreen(
             price = "14 999 ₽",
             oldPrice = null,
             category = "Outdoor",
+            description = "Классическая модель для повседневной носки",
             imageRes = R.drawable.image_2,
             isFavorite = false
         ),
@@ -105,6 +111,7 @@ fun HomeScreen(
             price = "7 999 ₽",
             oldPrice = "9 999 ₽",
             category = "Кежуал",
+            description = "Легендарные кеды на все времена",
             imageRes = R.drawable.image_3,
             isFavorite = false
         )
@@ -265,7 +272,7 @@ fun HomeScreen(
                                             indication = null,
                                             interactionSource = remember { MutableInteractionSource() }
                                         ) {
-                                            // Переход ко всем товарам
+                                            onCatalogClick()  // ← ИСПРАВЛЕНО: теперь используем колбэк
                                         }
                                     )
                                 }
@@ -280,7 +287,6 @@ fun HomeScreen(
                                             product = product,
                                             onProductClick = onProductClick,
                                             onFavoriteClick = { id, isFavorite ->
-                                                // Обработка избранного
                                                 println("Товар $id избранное: $isFavorite")
                                             }
                                         )
@@ -369,7 +375,7 @@ fun HomeScreen(
                                             indication = null,
                                             interactionSource = remember { MutableInteractionSource() }
                                         ) {
-                                            navController.navigate("catalog")
+                                            onCatalogClick()  // ← ИСПРАВЛЕНО
                                         }
                                     )
                                 }
@@ -384,7 +390,6 @@ fun HomeScreen(
                                             product = product,
                                             onProductClick = onProductClick,
                                             onFavoriteClick = { id, isFavorite ->
-                                                // Обработка избранного
                                                 println("Товар $id избранное: $isFavorite")
                                             }
                                         )
