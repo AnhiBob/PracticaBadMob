@@ -1,7 +1,8 @@
 package com.example.practicabad.ui.screens
 
-import androidx.compose.animation.*
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.*
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -20,17 +21,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.practicabad.R
-import com.example.practicabad.ui.model.OnboardingSlide
-import kotlinx.coroutines.delay
+import com.example.practicabad.data.model.OnboardingSlide
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalAnimationApi::class)
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun OnboardScreen(
     onGetStartedClick: () -> Unit
@@ -41,30 +38,27 @@ fun OnboardScreen(
             subtitle = "Начнем путешествие",
             description = "Умная, великолепная и модная коллекция",
             buttonText = "Начать",
-            imageRes = R.drawable.image_1
+            imageRes = R.drawable.ic_launcher_foreground
         ),
         OnboardingSlide(
             title = "У вас есть сила",
             subtitle = "В вашей комнате много красивых растений",
             description = "Изучите сейчас",
             buttonText = "Далее",
-            imageRes = R.drawable.image_2
+            imageRes = R.drawable.ic_launcher_foreground
         ),
         OnboardingSlide(
             title = "Готовы?",
             subtitle = "Начнем покупки",
             description = "Лучшие кроссовки для тебя",
             buttonText = "Далее",
-            imageRes = R.drawable.image_3
+            imageRes = R.drawable.ic_launcher_foreground
         )
     )
 
     val pagerState = rememberPagerState { slides.size }
     val coroutineScope = rememberCoroutineScope()
     var currentPage by remember { mutableStateOf(0) }
-
-    // Анимация появления/исчезновения
-    val transition = updateTransition(targetState = currentPage, label = "pageTransition")
 
     LaunchedEffect(pagerState.currentPage) {
         currentPage = pagerState.currentPage
@@ -75,7 +69,6 @@ fun OnboardScreen(
             state = pagerState,
             modifier = Modifier.fillMaxSize()
         ) { page ->
-            // Анимируем появление каждого слайда
             val alpha by animateFloatAsState(
                 targetValue = if (pagerState.currentPage == page) 1f else 0f,
                 animationSpec = tween(durationMillis = 500),
@@ -96,7 +89,7 @@ fun OnboardScreen(
                 .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Индикаторы точек с анимацией
+            // Индикаторы точек
             Row(
                 modifier = Modifier.padding(bottom = 24.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -125,7 +118,7 @@ fun OnboardScreen(
                 }
             }
 
-            // Кнопка с изменяющимся текстом
+            // Кнопка
             Button(
                 onClick = {
                     if (pagerState.currentPage == slides.size - 1) {
@@ -145,8 +138,7 @@ fun OnboardScreen(
                 Text(
                     text = if (pagerState.currentPage == slides.size - 1) "Начать" else "Далее",
                     modifier = Modifier.padding(vertical = 8.dp),
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Medium
+                    fontSize = 16.sp
                 )
             }
         }
@@ -166,52 +158,33 @@ fun OnboardingSlideItem(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        // Анимируем появление картинки
-        AnimatedVisibility(
-            visible = alpha > 0.5f,
-            enter = fadeIn() + scaleIn(),
-            exit = fadeOut() + scaleOut()
-        ) {
-            Image(
-                painter = painterResource(id = slide.imageRes),
-                contentDescription = null,
-                modifier = Modifier
-                    .size(200.dp)
-                    .padding(bottom = 32.dp),
-                contentScale = ContentScale.Fit
-            )
-        }
+        Image(
+            painter = painterResource(id = slide.imageRes),
+            contentDescription = null,
+            modifier = Modifier
+                .size(200.dp)
+                .padding(bottom = 32.dp),
+            contentScale = ContentScale.Fit
+        )
 
-        // Анимируем появление текста
-        AnimatedVisibility(
-            visible = alpha > 0.5f,
-            enter = fadeIn(animationSpec = tween(delayMillis = 200)) + slideInVertically(),
-            exit = fadeOut() + slideOutVertically()
-        ) {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(
-                    text = slide.title,
-                    fontSize = 28.sp,
-                    fontWeight = FontWeight.Bold,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
+        Text(
+            text = slide.title,
+            fontSize = 28.sp,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
 
-                Text(
-                    text = slide.subtitle,
-                    fontSize = 18.sp,
-                    color = Color.Gray,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(bottom = 16.dp)
-                )
+        Text(
+            text = slide.subtitle,
+            fontSize = 18.sp,
+            color = Color.Gray,
+            modifier = Modifier.padding(bottom = 16.dp)
+        )
 
-                Text(
-                    text = slide.description,
-                    fontSize = 16.sp,
-                    color = Color.DarkGray,
-                    textAlign = TextAlign.Center
-                )
-            }
-        }
+        Text(
+            text = slide.description,
+            fontSize = 16.sp,
+            color = Color.DarkGray
+        )
     }
 }

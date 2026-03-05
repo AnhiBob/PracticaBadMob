@@ -1,5 +1,9 @@
 package com.example.practicabad.ui.screens
 
+import android.net.Uri
+import android.provider.MediaStore
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -13,19 +17,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.rememberAsyncImagePainter
+import coil.request.ImageRequest
 import com.example.practicabad.R
 import com.example.practicabad.ui.components.DisableButton
+import java.io.File
+import java.io.FileOutputStream
 
 @Composable
 fun ProfileScreen(
     onEditProfileClick: () -> Unit = {},
-    onChangePhotoClick: () -> Unit = {},
     onSaveClick: () -> Unit = {},
     onSignOutClick: () -> Unit = {}
 ) {
@@ -35,6 +42,33 @@ fun ProfileScreen(
     var email by remember { mutableStateOf("ekaterina@mail.com") }
     var phone by remember { mutableStateOf("+7 (999) 123-45-67") }
     var address by remember { mutableStateOf("Москва, Россия") }
+
+    // Состояние для фото профиля
+    var photoUri by remember { mutableStateOf<Uri?>(null) }
+    val context = LocalContext.current
+
+    // Лаунчер для камеры
+    val cameraLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.TakePicture()
+    ) { success ->
+        if (success) {
+            // Фото сохранено, Uri уже обновлен
+        }
+    }
+
+    // Лаунчер для выбора из галереи
+    val galleryLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri ->
+        photoUri = uri
+    }
+
+    // Создание временного файла для фото
+    fun createImageFile(): File {
+        val filename = "profile_${System.currentTimeMillis()}.jpg"
+        val storageDir = context.cacheDir
+        return File(storageDir, filename)
+    }
 
     Column(
         modifier = Modifier
@@ -90,26 +124,84 @@ fun ProfileScreen(
                     .size(120.dp)
                     .clip(CircleShape)
                     .background(Color(0xFFE0E0E0))
+                    .clickable(enabled = isEditing) {
+                        // Показываем диалог выбора источника
+                    }
             ) {
-                // Заглушка для фото профиля
-                Image(
-                    painter = painterResource(id = R.drawable.ic_launcher_foreground),
-                    contentDescription = "Аватар",
-                    modifier = Modifier.fillMaxSize(),
-                    contentScale = ContentScale.Crop
-                )
+                if (photoUri != null) {
+                    // Загружаем фото из Uri
+                    val painter = rememberAsyncImagePainter(
+                        model = ImageRequest.Builder(context)
+                            .data(photoUri)
+                            .crossfade(true)
+                            .build()
+                    )
+                    Image(
+                        painter = painter,
+                        contentDescription = "Аватар",
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop
+                    )
+                } else {
+                    // Заглушка
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_launcher_foreground),
+                        contentDescription = "Аватар",
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.height(8.dp))
 
             if (isEditing) {
+                // Диалог выбора источника фото
+                var showPhotoDialog by remember { mutableStateOf(false) }
+
                 TextButton(
-                    onClick = onChangePhotoClick
+                    onClick = { showPhotoDialog = true }
                 ) {
                     Text(
                         text = "Изменить фото профиля",
                         color = MaterialTheme.colorScheme.primary,
                         fontSize = 14.sp
+                    )
+                }
+
+                if (showPhotoDialog) {
+                    AlertDialog(
+                        onDismissRequest = { showPhotoDialog = false },
+                        title = { Text("Изменить фото") },
+                        text = { Text("Выберите источник") },
+                        confirmButton = {
+                            TextButton(
+                                onClick = {
+                                    showPhotoDialog = false
+                                    // Открыть камеру
+                                    val file = createImageFile()
+                                    photoUri = androidx.core.content.FileProvider.getUriForFile(
+                                        context,
+                                        "${context.packageName}.fileprovider",
+                                        file
+                                    )
+                                    cameraLauncher.launch(photoUri)
+                                }
+                            ) {
+                                Text("Камера")
+                            }
+                        },
+                        dismissButton = {
+                            TextButton(
+                                onClick = {
+                                    showPhotoDialog = false
+                                    // Открыть галерею
+                                    galleryLauncher.launch("image/*")
+                                }
+                            ) {
+                                Text("Галерея")
+                            }
+                        }
                     )
                 }
             }

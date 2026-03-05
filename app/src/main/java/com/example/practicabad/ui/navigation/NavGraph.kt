@@ -6,6 +6,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.practicabad.ui.screens.*
+import androidx.compose.material3.Text
 
 @Composable
 fun NavGraph() {

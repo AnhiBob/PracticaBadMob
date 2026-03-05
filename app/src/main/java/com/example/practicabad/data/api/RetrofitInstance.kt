@@ -14,7 +14,7 @@ import javax.net.ssl.TrustManager
 import javax.net.ssl.X509TrustManager
 
 object RetrofitInstance {
-    const val SUPABASE_URL = "https://fgyhruylbifvlxlywabx.supabase.co/"
+    const val SUPABASE_URL = "https://ltljvsjtbekeiwzbpkou.supabase.co"
 
     // Создаем TrustManager, который доверяет всем сертификатам (для прокси)
     private val trustAllCerts = arrayOf<TrustManager>(object : X509TrustManager {
