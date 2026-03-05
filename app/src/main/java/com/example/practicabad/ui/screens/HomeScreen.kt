@@ -10,6 +10,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -56,32 +58,56 @@ fun HomeScreen(
         Product(
             id = "1",
             name = "Nike Air Max",
-            price = "13999 ₽",
-            oldPrice = "15999 ₽",
+            price = "13 999 ₽",
+            oldPrice = "15 999 ₽",
             category = "Outdoor",
-            imageRes = R.drawable.ic_launcher_foreground // Заменить на реальные фото
+            imageRes = R.drawable.image_1,
+            isFavorite = false
         ),
         Product(
             id = "2",
             name = "Adidas Ultraboost",
-            price = "17999 ₽",
+            price = "17 999 ₽",
+            oldPrice = null,
             category = "Бег",
-            imageRes = R.drawable.ic_launcher_foreground
+            imageRes = R.drawable.image_2,
+            isFavorite = false
         ),
         Product(
             id = "3",
             name = "Puma RS-X",
-            price = "12999 ₽",
+            price = "12 999 ₽",
+            oldPrice = null,
             category = "Кежуал",
-            imageRes = R.drawable.ic_launcher_foreground
+            imageRes = R.drawable.image_3,
+            isFavorite = false
         ),
         Product(
             id = "4",
             name = "Reebok Classic",
-            price = "9999 ₽",
-            oldPrice = "11999 ₽",
+            price = "9 999 ₽",
+            oldPrice = "11 999 ₽",
             category = "Кежуал",
-            imageRes = R.drawable.ic_launcher_foreground
+            imageRes = R.drawable.image_1,
+            isFavorite = false
+        ),
+        Product(
+            id = "5",
+            name = "New Balance 574",
+            price = "14 999 ₽",
+            oldPrice = null,
+            category = "Outdoor",
+            imageRes = R.drawable.image_2,
+            isFavorite = false
+        ),
+        Product(
+            id = "6",
+            name = "Converse Chuck Taylor",
+            price = "7 999 ₽",
+            oldPrice = "9 999 ₽",
+            category = "Кежуал",
+            imageRes = R.drawable.image_3,
+            isFavorite = false
         )
     )
 
@@ -135,6 +161,7 @@ fun HomeScreen(
                             .height(48.dp)
                             .clip(RoundedCornerShape(12.dp))
                             .background(Color(0xFFF5F5F5))
+                            .clickable { onSearchClick() }
                     ) {
                         Row(
                             modifier = Modifier
@@ -240,12 +267,13 @@ fun HomeScreen(
                                 LazyRow(
                                     horizontalArrangement = Arrangement.spacedBy(16.dp)
                                 ) {
-                                    items(products) { product ->
+                                    items(products.take(4)) { product ->
                                         ProductCard(
                                             product = product,
                                             onProductClick = onProductClick,
                                             onFavoriteClick = { id, isFavorite ->
                                                 // Обработка избранного
+                                                println("Товар $id избранное: $isFavorite")
                                             }
                                         )
                                     }
@@ -264,7 +292,9 @@ fun HomeScreen(
                                 )
 
                                 Card(
-                                    modifier = Modifier.fillMaxWidth(),
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(140.dp),
                                     shape = RoundedCornerShape(16.dp),
                                     colors = CardDefaults.cardColors(
                                         containerColor = Color(0xFF4CAF50)
@@ -272,7 +302,7 @@ fun HomeScreen(
                                 ) {
                                     Row(
                                         modifier = Modifier
-                                            .fillMaxWidth()
+                                            .fillMaxSize()
                                             .padding(16.dp),
                                         verticalAlignment = Alignment.CenterVertically
                                     ) {
@@ -309,6 +339,48 @@ fun HomeScreen(
                                 }
                             }
                         }
+
+                        // Новинки
+                        item {
+                            Column {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(
+                                        text = "Новинки",
+                                        fontSize = 18.sp,
+                                        fontWeight = FontWeight.SemiBold
+                                    )
+                                    Text(
+                                        text = "Все",
+                                        color = MaterialTheme.colorScheme.primary,
+                                        fontSize = 14.sp,
+                                        modifier = Modifier.clickable {
+                                            // Переход ко всем новинкам
+                                        }
+                                    )
+                                }
+
+                                Spacer(modifier = Modifier.height(12.dp))
+
+                                LazyRow(
+                                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                                ) {
+                                    items(products.drop(4).take(2)) { product ->
+                                        ProductCard(
+                                            product = product,
+                                            onProductClick = onProductClick,
+                                            onFavoriteClick = { id, isFavorite ->
+                                                // Обработка избранного
+                                                println("Товар $id избранное: $isFavorite")
+                                            }
+                                        )
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
                 1 -> {
@@ -317,7 +389,11 @@ fun HomeScreen(
                         modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center
                     ) {
-                        Text("Избранное", fontSize = 20.sp)
+                        Text(
+                            text = "Избранное",
+                            fontSize = 20.sp,
+                            color = Color.Gray
+                        )
                     }
                 }
                 2 -> {
@@ -326,7 +402,11 @@ fun HomeScreen(
                         modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center
                     ) {
-                        Text("Уведомления", fontSize = 20.sp)
+                        Text(
+                            text = "Уведомления",
+                            fontSize = 20.sp,
+                            color = Color.Gray
+                        )
                     }
                 }
                 3 -> {
@@ -335,7 +415,11 @@ fun HomeScreen(
                         modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center
                     ) {
-                        Text("Профиль", fontSize = 20.sp)
+                        Text(
+                            text = "Профиль",
+                            fontSize = 20.sp,
+                            color = Color.Gray
+                        )
                     }
                 }
             }

@@ -6,12 +6,12 @@ plugins {
 
 android {
     namespace = "com.example.practicabad"
-    compileSdk = 34
+    compileSdk = 35  // Было 34, меняем на 35
 
     defaultConfig {
         applicationId = "com.example.practicabad"
         minSdk = 33
-        targetSdk = 34
+        targetSdk = 35  // Тоже меняем на 35
         versionCode = 1
         versionName = "1.0"
 

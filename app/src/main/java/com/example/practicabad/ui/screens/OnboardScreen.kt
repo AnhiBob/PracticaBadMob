@@ -21,6 +21,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.practicabad.R
@@ -38,21 +40,21 @@ fun OnboardScreen(
             subtitle = "Начнем путешествие",
             description = "Умная, великолепная и модная коллекция",
             buttonText = "Начать",
-            imageRes = R.drawable.ic_launcher_foreground
+            imageRes = R.drawable.image_1
         ),
         OnboardingSlide(
             title = "У вас есть сила",
             subtitle = "В вашей комнате много красивых растений",
             description = "Изучите сейчас",
             buttonText = "Далее",
-            imageRes = R.drawable.ic_launcher_foreground
+            imageRes = R.drawable.image_2
         ),
         OnboardingSlide(
             title = "Готовы?",
             subtitle = "Начнем покупки",
             description = "Лучшие кроссовки для тебя",
             buttonText = "Далее",
-            imageRes = R.drawable.ic_launcher_foreground
+            imageRes = R.drawable.image_3
         )
     )
 
@@ -138,7 +140,8 @@ fun OnboardScreen(
                 Text(
                     text = if (pagerState.currentPage == slides.size - 1) "Начать" else "Далее",
                     modifier = Modifier.padding(vertical = 8.dp),
-                    fontSize = 16.sp
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Medium
                 )
             }
         }
@@ -162,7 +165,7 @@ fun OnboardingSlideItem(
             painter = painterResource(id = slide.imageRes),
             contentDescription = null,
             modifier = Modifier
-                .size(200.dp)
+                .size(220.dp)
                 .padding(bottom = 32.dp),
             contentScale = ContentScale.Fit
         )
@@ -171,6 +174,7 @@ fun OnboardingSlideItem(
             text = slide.title,
             fontSize = 28.sp,
             fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center,
             modifier = Modifier.padding(bottom = 8.dp)
         )
 
@@ -178,13 +182,15 @@ fun OnboardingSlideItem(
             text = slide.subtitle,
             fontSize = 18.sp,
             color = Color.Gray,
+            textAlign = TextAlign.Center,
             modifier = Modifier.padding(bottom = 16.dp)
         )
 
         Text(
             text = slide.description,
             fontSize = 16.sp,
-            color = Color.DarkGray
+            color = Color.DarkGray,
+            textAlign = TextAlign.Center
         )
     }
 }
