@@ -62,6 +62,15 @@ fun FavoriteScreen(
                     category = "Outdoor",
                     imageRes = R.drawable.image_2,
                     isFavorite = true
+                ),
+                Product(
+                    id = "7",
+                    name = "Vans Old Skool",
+                    price = "8 999 ₽",
+                    oldPrice = null,
+                    category = "Кежуал",
+                    imageRes = R.drawable.image_1,
+                    isFavorite = true
                 )
             )
         )
@@ -107,7 +116,7 @@ fun FavoriteScreen(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Icon(
-                        painter = painterResource(id = R.drawable.favorite),
+                        imageVector = Icons.Default.FavoriteBorder,
                         contentDescription = null,
                         modifier = Modifier.size(80.dp),
                         tint = Color.LightGray
@@ -164,7 +173,9 @@ fun FavoriteItem(
             .clickable(
                 indication = null,
                 interactionSource = remember { MutableInteractionSource() }
-            ) { onProductClick(product.id) },
+            ) {
+                onProductClick(product.id)
+            },
         shape = RoundedCornerShape(12.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
@@ -204,7 +215,8 @@ fun FavoriteItem(
                 Spacer(modifier = Modifier.height(4.dp))
 
                 Row(
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
                     Text(
                         text = product.price,
@@ -214,7 +226,6 @@ fun FavoriteItem(
                     )
 
                     product.oldPrice?.let {
-                        Spacer(modifier = Modifier.width(4.dp))
                         Text(
                             text = it,
                             fontSize = 12.sp,
