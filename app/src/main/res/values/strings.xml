@@ -1,3 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">PracticaBad</string>
+    <string name="app_name">ShoeStore Katerina</string>
+
+    <!-- Onboarding -->
+    <string name="welcome">Добро пожаловать</string>
+    <string name="journey">Начнем путешествие</string>
+    <string name="smart">Умная, великолепная и модная коллекция</string>
+    <string name="power">У вас есть сила</string>
+    <string name="beatiful">Красивая и привлекательная коллекция</string>
+    <string name="start">Начать</string>
+    <string name="next">Далее</string>
+
+    <!-- Auth -->
+    <string name="hello">Привет!</string>
+    <string name="details">Заполните свои данные</string>
+    <string name="email">Email</string>
+    <string name="pass">Пароль</string>
+    <string name="register">Регистрация</string>
+    <string name="name">Ваше имя</string>
+    <string name="agree">Я согласен на обработку персональных данных</string>
+    <string name="sign_up">Зарегистрироваться</string>
+    <string name="sign_in">Войти</string>
+    <string name="new_user">Новый пользователь?</string>
+    <string name="have_acc">Уже есть аккаунт?</string>
+    <string name="recovery">Восстановить пароль</string>
+    <string name="forgot_password">Забыли пароль?</string>
+    <string name="send">Отправить</string>
+    <string name="otp_verification">Подтверждение</string>
+    <string name="set_new_password">Новый пароль</string>
+    <string name="confirm_password">Подтвердите пароль</string>
+    <string name="save_now">Сохранить</string>
+
+    <!-- Home -->
+    <string name="home">Главная</string>
+    <string name="search">Поиск</string>
+    <string name="categories">Категории</string>
+    <string name="popular">Популярное</string>
+    <string name="all">Все</string>
+    <string name="sales">Акции</string>
+    <string name="favourite">Избранное</string>
+    <string name="cart">Корзина</string>
+    <string name="notifications">Уведомления</string>
+
+    <!-- Profile -->
+    <string name="profile">Профиль</string>
+    <string name="edit">Редактировать</string>
+    <string name="change_photo">Изменить фото профиля</string>
+    <string name="your_name">Имя</string>
+    <string name="last_name">Фамилия</string>
+    <string name="address">Адрес</string>
+    <string name="phone">Телефон</string>
+    <string name="save">Сохранить</string>
+    <string name="sign_out">Выйти</string>
+    <string name="camera">Камера</string>
+    <string name="gallery">Галерея</string>
 </resources>

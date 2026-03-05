@@ -3,6 +3,7 @@ package com.example.practicabad.ui.screens
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -10,8 +11,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -161,7 +160,10 @@ fun HomeScreen(
                             .height(48.dp)
                             .clip(RoundedCornerShape(12.dp))
                             .background(Color(0xFFF5F5F5))
-                            .clickable { onSearchClick() }
+                            .clickable(
+                                indication = null,
+                                interactionSource = remember { MutableInteractionSource() }
+                            ) { onSearchClick() }
                     ) {
                         Row(
                             modifier = Modifier
@@ -192,7 +194,10 @@ fun HomeScreen(
                             .size(48.dp)
                             .clip(CircleShape)
                             .background(MaterialTheme.colorScheme.primary)
-                            .clickable { onSearchClick() },
+                            .clickable(
+                                indication = null,
+                                interactionSource = remember { MutableInteractionSource() }
+                            ) { onSearchClick() },
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
@@ -256,7 +261,10 @@ fun HomeScreen(
                                         text = "Все",
                                         color = MaterialTheme.colorScheme.primary,
                                         fontSize = 14.sp,
-                                        modifier = Modifier.clickable {
+                                        modifier = Modifier.clickable(
+                                            indication = null,
+                                            interactionSource = remember { MutableInteractionSource() }
+                                        ) {
                                             // Переход ко всем товарам
                                         }
                                     )
@@ -357,7 +365,10 @@ fun HomeScreen(
                                         text = "Все",
                                         color = MaterialTheme.colorScheme.primary,
                                         fontSize = 14.sp,
-                                        modifier = Modifier.clickable {
+                                        modifier = Modifier.clickable(
+                                            indication = null,
+                                            interactionSource = remember { MutableInteractionSource() }
+                                        ) {
                                             // Переход ко всем новинкам
                                         }
                                     )

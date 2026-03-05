@@ -23,22 +23,31 @@ class SignInViewModel : ViewModel() {
     fun signIn(email: String, password: String) {
         viewModelScope.launch {
             try {
+                Log.d("SignInVM", "Начинаем вход для: $email")
                 _signInState.value = SignInState.Loading
 
                 val response = RetrofitInstance.userManagementService.signIn(
                     SignInRequest(email, password)
                 )
 
+                Log.d("SignInVM", "Код ответа: ${response.code()}")
+                Log.d("SignInVM", "Успешно: ${response.isSuccessful}")
+
                 if (response.isSuccessful) {
                     response.body()?.let {
-                        // Здесь можно сохранить токен
-                        Log.d("SignIn", "User authenticated: ${it.user.email}")
+                        Log.d("SignInVM", "Успешный вход: ${it.user.email}")
                         _signInState.value = SignInState.Success
+                    } ?: run {
+                        _signInState.value = SignInState.Error("Пустой ответ от сервера")
                     }
                 } else {
+                    val errorBody = response.errorBody()?.string()
+                    Log.e("SignInVM", "Ошибка: ${response.code()} - $errorBody")
+
                     val errorMessage = when (response.code()) {
                         400 -> "Неверный email или пароль"
                         401 -> "Неверные учетные данные"
+                        404 -> "Пользователь не найден"
                         422 -> "Неверный формат email"
                         429 -> "Слишком много попыток. Попробуйте позже"
                         else -> "Ошибка входа: ${response.message()}"
@@ -46,13 +55,14 @@ class SignInViewModel : ViewModel() {
                     _signInState.value = SignInState.Error(errorMessage)
                 }
             } catch (e: Exception) {
+                Log.e("SignInVM", "Исключение: ${e.message}", e)
+
                 val errorMessage = when (e) {
                     is java.net.ConnectException -> "Нет подключения к интернету"
-                    is java.net.SocketTimeoutException -> "Таймаут соединения"
+                    is java.net.SocketTimeoutException -> "Таймаут соединения. Сервер не отвечает"
                     else -> "Ошибка сети: ${e.message}"
                 }
                 _signInState.value = SignInState.Error(errorMessage)
-                Log.e("SignInViewModel", "Error: ${e.message}", e)
             }
         }
     }

@@ -1,12 +1,14 @@
 package com.example.practicabad.ui.components
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -24,7 +26,12 @@ fun CategoryChip(
     Surface(
         modifier = modifier
             .clip(RoundedCornerShape(16.dp))
-            .clickable { onClick(category.id) },
+            .clickable(
+                indication = null,
+                interactionSource = remember { MutableInteractionSource() }
+            ) {
+                onClick(category.id)
+            },
         color = if (category.isSelected)
             MaterialTheme.colorScheme.primary
         else Color(0xFFF0F0F0),

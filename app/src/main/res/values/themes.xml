@@ -6,8 +6,6 @@
     <style name="Theme.App.Starting" parent="Theme.SplashScreen">
         <item name="windowSplashScreenBackground">@color/accent</item>
         <item name="windowSplashScreenAnimatedIcon">@drawable/groups</item>
-        <item name="android:title">false</item>
-        <item name="android:windowNoTitle">true</item>
         <item name="windowSplashScreenAnimationDuration">1000</item>
         <item name="postSplashScreenTheme">@style/Theme.PracticaBad</item>
     </style>
