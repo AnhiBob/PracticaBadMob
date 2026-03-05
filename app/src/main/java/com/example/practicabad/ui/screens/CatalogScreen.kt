@@ -37,7 +37,6 @@ fun CatalogScreen(
     var selectedCategory by remember { mutableStateOf("all") }
     var searchQuery by remember { mutableStateOf("") }
 
-    // Категории
     val categories = listOf(
         Category("all", "Все", true),
         Category("outdoor", "Outdoor"),
@@ -48,7 +47,6 @@ fun CatalogScreen(
         Category("casual", "Кежуал")
     )
 
-    // Все товары
     val allProducts = listOf(
         Product(
             id = "1",
@@ -121,28 +119,9 @@ fun CatalogScreen(
             category = "Бег",
             imageRes = R.drawable.image_2,
             isFavorite = false
-        ),
-        Product(
-            id = "9",
-            name = "Hoka Bondi 8",
-            price = "16 999 ₽",
-            oldPrice = null,
-            category = "Бег",
-            imageRes = R.drawable.image_3,
-            isFavorite = false
-        ),
-        Product(
-            id = "10",
-            name = "Salomon Speedcross",
-            price = "14 999 ₽",
-            oldPrice = "16 999 ₽",
-            category = "Outdoor",
-            imageRes = R.drawable.image_1,
-            isFavorite = false
         )
     )
 
-    // Фильтрация товаров
     val filteredProducts = remember(selectedCategory, searchQuery) {
         allProducts.filter { product ->
             val categoryMatch = selectedCategory == "all" ||
@@ -158,13 +137,12 @@ fun CatalogScreen(
             .fillMaxSize()
             .background(Color.White)
     ) {
-        // Верхняя панель с поиском
+        // Верхняя панель
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp)
         ) {
-            // Заголовок и кнопка назад
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
@@ -172,8 +150,7 @@ fun CatalogScreen(
                 IconButton(onClick = onBackClick) {
                     Icon(
                         painter = painterResource(id = R.drawable.back),
-                        contentDescription = "Назад",
-                        modifier = Modifier.size(24.dp)
+                        contentDescription = "Назад"
                     )
                 }
 
@@ -190,7 +167,6 @@ fun CatalogScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Поле поиска
             OutlinedTextField(
                 value = searchQuery,
                 onValueChange = { searchQuery = it },
@@ -211,7 +187,7 @@ fun CatalogScreen(
             )
         }
 
-        // Категории (горизонтальный скролл)
+        // Категории
         LazyRow(
             modifier = Modifier
                 .fillMaxWidth()
@@ -231,9 +207,8 @@ fun CatalogScreen(
             }
         }
 
-        // Результаты поиска
+        // Сетка товаров
         if (filteredProducts.isEmpty()) {
-            // Пустое состояние
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -257,18 +232,9 @@ fun CatalogScreen(
                         fontSize = 18.sp,
                         color = Color.Gray
                     )
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    Text(
-                        text = "Попробуйте изменить параметры поиска",
-                        fontSize = 14.sp,
-                        color = Color.LightGray
-                    )
                 }
             }
         } else {
-            // Сетка товаров
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
@@ -288,7 +254,6 @@ fun CatalogScreen(
                             )
                         }
 
-                        // Если в ряду один товар, добавляем пустой Placeholder
                         if (rowProducts.size == 1) {
                             Spacer(modifier = Modifier.weight(1f))
                         }
@@ -320,7 +285,6 @@ fun CatalogProductCard(
         Column(
             modifier = Modifier.padding(8.dp)
         ) {
-            // Изображение
             Image(
                 painter = painterResource(id = product.imageRes),
                 contentDescription = product.name,
@@ -333,14 +297,12 @@ fun CatalogProductCard(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Категория
             Text(
                 text = product.category,
                 fontSize = 11.sp,
                 color = MaterialTheme.colorScheme.primary
             )
 
-            // Название
             Text(
                 text = product.name,
                 fontSize = 14.sp,
@@ -351,7 +313,6 @@ fun CatalogProductCard(
 
             Spacer(modifier = Modifier.height(4.dp))
 
-            // Цена
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(4.dp)
@@ -376,7 +337,6 @@ fun CatalogProductCard(
     }
 }
 
-// Вспомогательная функция для группировки товаров по 2
 fun <T> List<T>.chunked(size: Int): List<List<T>> {
     val result = mutableListOf<List<T>>()
     for (i in indices step size) {

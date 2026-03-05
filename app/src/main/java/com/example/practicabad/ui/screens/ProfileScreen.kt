@@ -28,7 +28,6 @@ import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.example.practicabad.R
 import java.io.File
-import java.io.FileOutputStream
 
 @Composable
 fun ProfileScreen(

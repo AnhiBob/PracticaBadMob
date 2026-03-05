@@ -1,11 +1,25 @@
 package com.example.practicabad.ui.navigation
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.practicabad.ui.screens.*
+import com.example.practicabad.ui.screens.CatalogScreen
+import com.example.practicabad.ui.screens.CreateNewPasswordScreen
+import com.example.practicabad.ui.screens.FavoriteScreen
+import com.example.practicabad.ui.screens.ForgotPasswordScreen
+import com.example.practicabad.ui.screens.HomeScreen
+import com.example.practicabad.ui.screens.OnboardScreen
+import com.example.practicabad.ui.screens.OtpVerificationScreen
+import com.example.practicabad.ui.screens.ProductDetailScreen
+import com.example.practicabad.ui.screens.ProfileScreen
+import com.example.practicabad.ui.screens.RegisterAccountScreen
+import com.example.practicabad.ui.screens.SignInScreen
 
 @Composable
 fun NavGraph() {
@@ -113,8 +127,47 @@ fun NavGraph() {
                 onNotificationsClick = {
                     navController.navigate("notifications")
                 },
-                onCatalogClick = {  // ← ЭТОТ ПАРАМЕТР НУЖНО ДОБАВИТЬ
+                onCatalogClick = {
                     navController.navigate("catalog")
+                }
+            )
+        }
+
+        composable("catalog") {
+            CatalogScreen(
+                onProductClick = { productId ->
+                    navController.navigate("product_detail/$productId")
+                },
+                onBackClick = {
+                    navController.popBackStack()
+                }
+            )
+        }
+
+        composable("favorite") {
+            FavoriteScreen(
+                onProductClick = { productId ->
+                    navController.navigate("product_detail/$productId")
+                },
+                onBackClick = {
+                    navController.popBackStack()
+                }
+            )
+        }
+
+        composable("product_detail/{productId}") { backStackEntry ->
+            val productId = backStackEntry.arguments?.getString("productId") ?: ""
+            ProductDetailScreen(
+                productId = productId,
+                onBackClick = {
+                    navController.popBackStack()
+                },
+                onAddToCartClick = { id ->
+                    navController.navigate("cart")
+                },
+                onFavoriteClick = { id, isFavorite ->
+                    // Обработка избранного
+                    println("Товар $id избранное: $isFavorite")
                 }
             )
         }
@@ -123,9 +176,6 @@ fun NavGraph() {
             ProfileScreen(
                 onEditProfileClick = {
                     // Режим редактирования внутри экрана
-                },
-                onChangePhotoClick = {
-                    // Открыть камеру
                 },
                 onSaveClick = {
                     navController.popBackStack()
@@ -138,74 +188,22 @@ fun NavGraph() {
             )
         }
 
-        composable("favorite") {
-            // Заглушка для избранного
-            androidx.compose.material3.Text(
-                text = "Избранное",
-                modifier = androidx.compose.ui.Modifier.fillMaxSize()
-            )
+        composable("cart") {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                Text("Корзина (в разработке)")
+            }
         }
 
         composable("notifications") {
-            // Заглушка для уведомлений
-            androidx.compose.material3.Text(
-                text = "Уведомления",
-                modifier = androidx.compose.ui.Modifier.fillMaxSize()
-            )
-        }
-
-        composable("cart") {
-            // Заглушка для корзины
-            androidx.compose.material3.Text(
-                text = "Корзина",
-                modifier = androidx.compose.ui.Modifier.fillMaxSize()
-            )
-        }
-
-        composable("product_detail/{productId}") { backStackEntry ->
-            val productId = backStackEntry.arguments?.getString("productId") ?: ""
-            // Заглушка для деталей товара
-            androidx.compose.material3.Text(
-                text = "Детали товара: $productId",
-                modifier = androidx.compose.ui.Modifier.fillMaxSize()
-            )
-        }
-        composable("catalog") {
-            CatalogScreen(
-                onProductClick = { productId ->
-                    navController.navigate("product_detail/$productId")
-                },
-                onBackClick = {
-                    navController.popBackStack()
-                }
-            )
-        }
-        composable("favorite") {
-            FavoriteScreen(
-                onProductClick = { productId ->
-                    navController.navigate("product_detail/$productId")
-                },
-                onBackClick = {
-                    navController.popBackStack()
-                }
-            )
-        }
-        composable("product_detail/{productId}") { backStackEntry ->
-            val productId = backStackEntry.arguments?.getString("productId") ?: ""
-            ProductDetailScreen(
-                productId = productId,
-                onBackClick = {
-                    navController.popBackStack()
-                },
-                onAddToCartClick = { id ->
-                    // TODO: добавить в корзину
-                    println("Добавлено в корзину: $id")
-                },
-                onFavoriteClick = { id, isFavorite ->
-                    // TODO: обновить избранное
-                    println("Товар $id избранное: $isFavorite")
-                }
-            )
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                Text("Уведомления (в разработке)")
+            }
         }
     }
 }

@@ -163,7 +163,7 @@ fun SignInScreen(
         // Ссылка на регистрацию
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center
+            horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically
         ) {
             Text("Нет аккаунта? ")
             TextButton(

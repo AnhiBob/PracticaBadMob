@@ -79,7 +79,8 @@ fun OnboardScreen(
 
             OnboardingSlideItem(
                 slide = slides[page],
-                alpha = alpha
+                alpha = alpha,
+                isFirstSlide = page == 0  // ← Добавляем этот параметр
             )
         }
 
@@ -97,25 +98,28 @@ fun OnboardScreen(
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 repeat(slides.size) { index ->
-                    val size by animateDpAsState(
-                        targetValue = if (pagerState.currentPage == index) 12.dp else 8.dp,
+                    val width by animateDpAsState(
+                        targetValue = if (pagerState.currentPage == index) 43.dp else 28.dp,
                         animationSpec = tween(durationMillis = 300),
-                        label = "dotSize"
+                        label = "dotWidth"
                     )
 
                     val color by animateColorAsState(
                         targetValue = if (pagerState.currentPage == index)
-                            MaterialTheme.colorScheme.primary
-                        else Color.Gray.copy(alpha = 0.5f),
+                            Color.White
+                        else Color(0xFF2B6B8B),
                         animationSpec = tween(durationMillis = 300),
                         label = "dotColor"
                     )
 
                     Box(
                         modifier = Modifier
-                            .size(size)
-                            .clip(CircleShape)
-                            .background(color)
+                            .width(width)
+                            .height(8.dp)  // фиксированная высота 8dp
+                            .background(
+                                color = color,
+                                shape = RoundedCornerShape(50)  // делает овал
+                            )
                     )
                 }
             }
@@ -134,14 +138,15 @@ fun OnboardScreen(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.primary
+                    containerColor = Color.White
                 )
             ) {
                 Text(
                     text = if (pagerState.currentPage == slides.size - 1) "Начать" else "Далее",
                     modifier = Modifier.padding(vertical = 8.dp),
                     fontSize = 16.sp,
-                    fontWeight = FontWeight.Medium
+                    fontWeight = FontWeight.Medium,
+                    color = Color.Black
                 )
             }
         }
@@ -151,46 +156,93 @@ fun OnboardScreen(
 @Composable
 fun OnboardingSlideItem(
     slide: OnboardingSlide,
-    alpha: Float
+    alpha: Float,
+    isFirstSlide: Boolean  // Добавляем параметр
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.White)
-            .padding(32.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Image(
-            painter = painterResource(id = slide.imageRes),
-            contentDescription = null,
+    if (isFirstSlide) {
+        // Первый слайд - картинка на всю ширину
+        Column(
             modifier = Modifier
-                .size(220.dp)
-                .padding(bottom = 32.dp),
-            contentScale = ContentScale.Fit
-        )
+                .fillMaxSize()
+                .background(Color(0xFF48B2E7))
+        ) {
+            Spacer(modifier = Modifier.height(122.dp))
+            // Текст внизу
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(32.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = slide.title,
+                    fontSize = 28.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+            }
+            Spacer(modifier = Modifier.height(122.dp))
+            // Картинка на всю ширину
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+            ) {
+                Spacer(modifier = Modifier.height(122.dp))
+                Image(
+                    painter = painterResource(id = slide.imageRes),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    contentScale = ContentScale.Crop
+                )
+            }
 
-        Text(
-            text = slide.title,
-            fontSize = 28.sp,
-            fontWeight = FontWeight.Bold,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(bottom = 8.dp)
-        )
 
-        Text(
-            text = slide.subtitle,
-            fontSize = 18.sp,
-            color = Color.Gray,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(bottom = 16.dp)
-        )
+        }
+    } else {
+        // Остальные слайды - как было
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color(0xFF48B2E7))
+                .padding(32.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Image(
+                painter = painterResource(id = slide.imageRes),
+                contentDescription = null,
+                modifier = Modifier
+                    .padding(bottom = 32.dp)
+                    .fillMaxWidth(),
+                contentScale = ContentScale.Crop
+            )
 
-        Text(
-            text = slide.description,
-            fontSize = 16.sp,
-            color = Color.DarkGray,
-            textAlign = TextAlign.Center
-        )
+            Text(
+                text = slide.title,
+                fontSize = 28.sp,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+
+            Text(
+                text = slide.subtitle,
+                fontSize = 18.sp,
+                color = Color.Gray,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
+
+            Text(
+                text = slide.description,
+                fontSize = 16.sp,
+                color = Color.DarkGray,
+                textAlign = TextAlign.Center
+            )
+        }
     }
 }
