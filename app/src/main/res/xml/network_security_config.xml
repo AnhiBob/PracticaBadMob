@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <debug-overrides>
+        <trust-anchors>
+            <!-- Доверять пользовательским сертификатам для отладки -->
+            <certificates src="user" />
+        </trust-anchors>
+    </debug-overrides>
+    <!-- Для конкретного домена с самоподписанным сертификатом -->
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">192.168.1.100</domain> <!-- IP вашего сервера -->
+        <domain includeSubdomains="true">localhost</domain>
+        <trust-anchors>
+            <certificates src="system" />
+            <certificates src="user" />
+        </trust-anchors>
+    </domain-config>
+</network-security-config>
